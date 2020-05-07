@@ -1,0 +1,39 @@
+<%- include('partials/header.ejs') %>
+
+<p>
+    Made by Stam in <a href="https://nodejs.org" target="_blank">node.js</a>.
+    <hr>
+    <small class="font-italic text-muted">
+        YouTube to MP3 has been tested and works perfectly on the latest versions of
+        <a href="https://www.google.com/chrome" target="_blank">Google Chrome</a> and
+        <a href="https://www.mozilla.org/firefox" target="_blank">Mozilla Firefox</a>.
+    </small>
+</p>
+
+<p>
+    <b>Privacy:</b>
+    <br>
+    <code>
+        <ul>
+            <li>We do not keep a single piece of information of our visitors.</li>
+            <li>We don't even run a database.</li>
+            <li>
+                We use cookies for the socket.io notification system,
+                for the darkmode toggle system,
+                and also to store your MP3 quality preference so you don't have to choose each time (not yet implemented).
+            </li>
+        </ul>
+        <center><span class="text-muted">That's all :)</span></center>
+    </code>
+</p>
+
+<p>
+    <b>Libraries used:</b>
+    <br>
+    <ul>
+        <li><a href="https://github.com/fent/node-ytdl-core" target="_blank">ytdl-core</a></li>
+        <li><a href="https://www.ffmpeg.org/" target="_blank">ffmpeg</a></li>
+    </ul>
+</p>
+
+<%- include('partials/footer.ejs') %>

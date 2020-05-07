@@ -1,0 +1,62 @@
+<%- include('partials/header') %>
+
+<% if (err) { %>
+<div class="alert alert-danger"><%= err %></div>
+<% } %>
+
+<!--<div class="card border-primary mb-3">
+    <div class="row no-gutters">
+        <div class="col-md-4" id="yt-thumbnail">
+
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <h5 class="card-title" id="yt-title"><i class="text-muted">Title</i></h5>
+                <p class="card-text" id="yt-description"><i class="text-muted">Description</i></p>
+            </div>
+        </div>
+    </div>
+</div>-->
+
+<% if(url) { %>
+<div class="alert alert-info">Your link is already filled in :) Just click <b>Convert</b>!</div>
+<% } %>
+
+<form action="/convert" method="post">
+    <!-- CSRF TOKEN -->
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    
+    <!-- socket id -->
+    <input type="hidden" name="socketId" value="">
+
+    <div class="input-group mb-3">
+        <input type="text" name="url" id="url" class="form-control" placeholder="YouTube Link" aria-describedby="btnConvert" value="<%= url %>" required>
+        <div class="input-group-append">
+            <input type="submit" name="convert" id="btnConvert" class="btn btn-outline-success" value="Convert">
+        </div>
+    </div>
+
+    <h6>quality</h6>
+    
+    <div class="input-group" id="qualityRadio">
+        <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" class="custom-control-input" id="customRadio" name="quality" value="mp3regular" checked>
+            <label class="custom-control-label" for="customRadio" data-toggle="tooltip" data-placement="bottom" title="Lower quality, smaller file.">MP3 regular</label>
+        </div>
+        <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" class="custom-control-input" id="customRadio2" name="quality" value="mp3best">
+            <label class="custom-control-label" for="customRadio2" data-toggle="tooltip" data-placement="bottom" title="Best possible quality, big file.">MP3 best possible</label>
+        </div>
+    </div>
+    <br>
+
+    <center><a class="btn btn-outline-success" href="#" id="btnDownload" style="display:none;">Download now!</a></center>
+
+    <center>
+    <div id="loading" class="spinner-border text-success" style="display:none;" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+    </center>
+</form>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,11 @@
+TODO:
+
+Safari: stop rendering /convert POST request.
+Firefox: socket.io notifications are not showing
+(IF USING AJAX): FIX JUNK SHIT THAT GETS RESPONDED WHEN USING AJAX
+
+
+
+Not in priority:
+
+Do not allow users to spam with too many post requests
