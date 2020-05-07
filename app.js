@@ -284,7 +284,7 @@ app.post('/convert', /*cors(corsOptions),*/ (req, res) => {
             } else {
                 let title = info.title.replace('|','').toString('ascii');
                 let videoLength = info.length_seconds;
-                //
+                
                 // check whether the video exceeds the maximum length
                 if(videoLength > 600) { // 600 seconds = 10 mins
                     io.sockets.to(socketId).emit('send notification', statusCodes.error, 'Max video length is 10 minutes.');
