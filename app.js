@@ -1,15 +1,16 @@
-const Discord = require('discord.js');
-const express = require('express');
-const ytdl = require('ytdl-core');
-const path = require('path');
-const contentDisposition = require('content-disposition')
-const cors = require('cors');
-const csrf = require('csurf');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-const session = require('express-session');
-const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
-const ffmpeg = require('fluent-ffmpeg');
+const Discord               = require('discord.js');
+const express               = require('express');
+const ytdl                  = require('ytdl-core');
+const path                  = require('path');
+const contentDisposition    = require('content-disposition');
+const cors                  = require('cors');
+const csrf                  = require('csurf');
+const cookieParser          = require('cookie-parser');
+const bodyParser            = require('body-parser');
+const session               = require('express-session');
+const ffmpegPath            = require('@ffmpeg-installer/ffmpeg').path;
+const ffmpeg                = require('fluent-ffmpeg');
+
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 const port = process.env.PORT || 4000;
@@ -68,7 +69,7 @@ if (enableDiscordBot)
 
 
 
-                message.reply('Converting to MP3, please wait...');
+                /*message.reply('Converting to MP3, please wait...');
 
                 // other download method goes here???
 
@@ -81,12 +82,12 @@ if (enableDiscordBot)
                 } catch (err) {
                     console.error(`[discord bot] download(): Something went wrong: ${err}`);
                     message.reply(`There was an error. The file may be too big, so you might want to use the web version here: ${mySite}.\nERROR: ${err}`);
-                }
+                }*/
 
                 break;
             case 'play':
-                message.reply('Under construction.');
-                break;
+                //message.reply('Under construction.');
+                //break;
 
                 // Voice only works in guilds, if the message does not come from a guild,
                 // we ignore it
