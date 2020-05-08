@@ -87,8 +87,8 @@ if (enableDiscordBot)
                 break;
             case 'play':
                 // to use the 'play' command: npm install @discordjs/opus
-                message.reply('Under construction.');
-                break;
+                //message.reply('Under construction.');
+                //break;
 
                 // Voice only works in guilds, if the message does not come from a guild,
                 // we ignore it
