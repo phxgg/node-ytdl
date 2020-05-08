@@ -88,7 +88,7 @@ if (enableDiscordBot)
             case 'play':
                 // to use the 'play' command:
                 // npm install @discordjs/opus
-                // also uninstall node-opus/opusscript or whatever opus we're currently using
+                // also uninstall opusscript
 
                 message.reply('Under construction.');
                 break;
