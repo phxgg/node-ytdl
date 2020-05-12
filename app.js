@@ -337,7 +337,7 @@ io.on('connection', (socket) => {
     // user connected
 });
 
-const port = config.web.port;
+const port = process.env.WEB_PORT || 4000; // config.web.port
 http.listen(port, () => {
     log(`[node-ytdl webserver] Listening on port ${port}`);
 });
