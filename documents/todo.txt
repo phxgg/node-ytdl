@@ -1,11 +1,11 @@
 TODO:
 
-main.js#50
+public/js/main.js#50
 
 Not in priority:
 
+Maybe show video thumbnail and other info when filling the URL (before clicking Convert)
 Do not allow users to spam with too many post requests
-
 Login/Register system
 Subscription system for better mp3 quality & video download
 GetInfo API for subscribed users
