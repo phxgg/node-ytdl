@@ -1,3 +1,4 @@
+const config                = require('./config')
 const Discord               = require('discord.js');
 const express               = require('express');
 const ytdl                  = require('ytdl-core');
@@ -13,7 +14,6 @@ const ffmpeg                = require('fluent-ffmpeg');
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
-const port = process.env.PORT || 4000;
 const app = express();
 const http = require('http').createServer(app);
 const io  = require('socket.io')(http);
@@ -24,36 +24,28 @@ const io  = require('socket.io')(http);
 ********************************
 */
 
-var enableDiscordBot = true;
-if (enableDiscordBot)
+if (config.discord.enableBot)
 {
     // Discord Bot
     //-----------------------------------
 
-    const discordPrefix = '++';
-    const discordToken = 'Njg0NzQ0MDk2OTM3NDEwNjE1.Xl-kEA.kGDDt2XagSXXxsrSCsR_p7WHb4k';
     const discord = new Discord.Client();
-
-    const mySite = 'https://node-ytdl.herokuapp.com';
-    //const mySite = 'http://localhost:4000';
-
-    const generateDownloadSecretKey = 'OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOMGxxxD1!';
 
     discord.on('ready', () => {
         console.log(`discord.js client ready. Logged in as: ${discord.user.tag}`);
     });
 
-    var dispatcher = null;
-    var isPlaying = false;
+    let dispatcher = null;
+    let isPlaying = false;
 
     discord.on('message', async message => {
-        if (!message.content.startsWith(discordPrefix) || message.author.bot) return;
+        if (!message.content.startsWith(config.discord.prefix) || message.author.bot) return;
 
-        const args = message.content.slice(discordPrefix.length).split(' ');
+        const args = message.content.slice(config.discord.prefix.length).split(' ');
         const command = args.shift().toLowerCase();
 
         // get youtube link from arguments
-        var ytlink = args[0];
+        let ytlink = args[0];
 
         switch (command)
         {
@@ -63,7 +55,7 @@ if (enableDiscordBot)
 
 
                 // 
-                message.reply(`${mySite}/?url=${ytlink}`);
+                message.reply(`${config.web.site}/?url=${ytlink}`);
                 break;
 
 
@@ -74,14 +66,14 @@ if (enableDiscordBot)
                 // other download method goes here???
 
                 try {
-                    let streamFile = `${mySite}/generate?url=${ytlink}&secretKey=${generateDownloadSecretKey}`;
+                    let streamFile = `${config.web.site}/generate?url=${ytlink}&secretKey=${config.secret.generateKey}`;
                     let title = 'track.mp3';
 
                     const attachment = new Discord.MessageAttachment(streamFile, title);
                     await message.reply('Here is your track!', attachment);
                 } catch (err) {
                     console.error(`[discord bot] download(): Something went wrong: ${err}`);
-                    message.reply(`There was an error. The file may be too big, so you might want to use the web version here: ${mySite}.\nERROR: ${err}`);
+                    message.reply(`There was an error. The file may be too big, so you might want to use the web version here: ${config.web.site}.\nERROR: ${err}`);
                 }*/
 
                 break;
@@ -167,37 +159,26 @@ if (enableDiscordBot)
                 }
                 break;
             case 'help':
-                message.reply(`Check out: ${mySite}/discord for the bot's commands.`);
+                message.reply(`Check out: ${config.web.site}/discord for the bot's commands.`);
                 break;
         }
     });
 
-    discord.login(discordToken);
+    discord.login(config.discord.token);
 
     //-----------------------------------
     // End Discord Bot   
 }
 
-// Web server
+// Web Server
 const csrfProtection = csrf();
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false })); // false
 app.use(cookieParser());
-app.use(session({ secret: 'Dbb1Qp8HiS56Rwlj8jpJ', resave: false, saveUninitialized: false }));
+app.use(session({ secret: config.web.sessionKey, resave: false, saveUninitialized: false }));
 app.use(csrfProtection);
-
-/*const whitelist = ['http://127.0.0.1:4000', 'http://example2.com']
-const corsOptions = {
-  origin: function(origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  }
-}*/
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '/views'));
@@ -270,7 +251,7 @@ app.get('/generate', (req, res) => {
     return;
 });
 
-app.post('/convert', /*cors(corsOptions),*/ (req, res) => {
+app.post('/convert', (req, res) => {
     var url = req.body.url;
     var quality = req.body.quality;
     var socketId = req.body.socketId;
@@ -315,8 +296,6 @@ app.post('/convert', /*cors(corsOptions),*/ (req, res) => {
                     //var disposition = `attachment; filename="${title}.mp3"; filename*=UTF-8''${ encodeURIComponent(title + '.mp3') }`;
                     res.setHeader('Content-Disposition', contentDisposition(title + '.mp3'));
 
-                    // FIX JUNK SHIT THAT GETS RESPONDED WHEN USING AJAX
-
                     // mp3 conversion using ffmpeg
                     ffmpeg()
                         .input(stream)
@@ -358,6 +337,6 @@ io.on('connection', (socket) => {
     // user connected
 });
 
-http.listen(port, () => {
-    log(`[node-ytdl webserver] Listening on port ${port}`);
+http.listen(config.web.port, () => {
+    log(`[node-ytdl webserver] Listening on port ${config.web.port}`);
 });

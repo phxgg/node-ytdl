@@ -24,7 +24,7 @@
     "opusscript": "0.0.7",
     "path": "^0.12.7",
     "socket.io": "^2.3.0",
-    "ytdl-core": "^2.1.1"
+    "ytdl-core": "^2.1.2"
   },
   "devDependencies": {},
   "scripts": {

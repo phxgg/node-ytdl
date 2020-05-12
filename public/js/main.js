@@ -44,9 +44,12 @@ $('#btnConvert').click(function(e) {
 
             btnDownload.href = blobUrl;
             btnDownload.download = filename;
+            btnDownload.target = "_blank"; // idk
             btnDownload.click();
 
-            wndFile.revokeObjectURL(blobUrl);
+            // we have to revoke the blob url when we no longer need it (when the user has downloaded the file)
+            // find a way to know when the file has been downloaded
+            //wndFile.revokeObjectURL(blobUrl);
         }
     });
 });
