@@ -5,7 +5,7 @@ config.web          = {};
 config.secret       = {};
 
 // Discord Settings
-config.discord.enableBot        = false;
+config.discord.enableBot        = true;
 config.discord.prefix           = '++';
 config.discord.token            = 'Njg0NzQ0MDk2OTM3NDEwNjE1.Xl-kEA.kGDDt2XagSXXxsrSCsR_p7WHb4k';
 

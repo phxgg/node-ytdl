@@ -1,8 +1,6 @@
 TODO:
 
-Currently works perfectly for Google Chrome & Mozilla Firefox. Make it work for more browsers too (mobile too)
-
-
+main.js#50
 
 Not in priority:
 
