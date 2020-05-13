@@ -244,8 +244,14 @@ app.get('/discord', (req, res) => {
     res.render('discord');
 });
 
+app.get('/contact', (req, res) => {
+    res.render('contact', {
+        csrfToken: req.csrfToken()
+    });
+})
+
 app.get('/getinfo', (req, res) => {
-    res.send('Not much to see here :|');
+    res.status(200).send('Not much to see here :|');
     return;
 
     /*var url = req.query.url;
@@ -259,6 +265,11 @@ app.get('/getinfo', (req, res) => {
 });
 
 app.get('/generate', (req, res) => {
+    res.status(200).send('wat');
+    return;
+});
+
+app.post('/contact', (req, res) => {
     res.status(200).send('wat');
     return;
 });
