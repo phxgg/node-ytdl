@@ -11,6 +11,8 @@ const bodyParser            = require('body-parser');
 const session               = require('express-session');
 const ffmpegPath            = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg                = require('fluent-ffmpeg');
+const fs                    = require('fs');
+const readline              = require('readline');
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
@@ -195,6 +197,16 @@ function log(data) {
     console.log(data);
 }
 
+function randomStr(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
 function getInfo(socketId, url, callback) {
     if(!url || !ytdl.validateURL(url)) {
         callback(statusCodes.error, 'Invalid YouTube Link.');
@@ -257,7 +269,8 @@ app.post('/convert', (req, res) => {
     var socketId = req.body.socketId;
 
     // Check for quality value
-    var allowedQualities = ['mp3regular', 'mp3best'];
+    var allowedQualities = ['mp3low', 'mp3best', 'mp4video'];
+
     if(allowedQualities.indexOf(quality) == -1) { // index not found
         io.sockets.to(socketId).emit('send notification', statusCodes.error, 'Invalid quality value.');
         res.status(204).end();
@@ -276,43 +289,136 @@ app.post('/convert', (req, res) => {
                     io.sockets.to(socketId).emit('send notification', statusCodes.error, 'Max video length is 10 minutes.');
                     res.status(204).end();
                 } else {
+                    // check if video or audio
+                    let isVideo = (quality.indexOf('mp4') !== -1);
+
+                    // variables for exporting
+                    var exportQuality = null;
+                    var contentType = (isVideo) ? 'video/mp4' : 'audio/mpeg3';
+                    var extension = (isVideo) ? '.mp4' : '.mp3';
+
                     // set quality and audio bitrate
                     let audioBitrate = null;
-                    if (quality == 'mp3best') {
-                        quality = 'highestaudio';
-                        audioBitrate = 320;
-                    } else {
-                        quality = 'lowestaudio';
-                        audioBitrate = 128;
+
+                    // video variables
+                    let vidAudioOutput = null;
+                    let vidMainOutput = null;
+
+                    if (isVideo) {
+                        let dir = './tmp';
+                        if (!fs.existsSync(dir)) {
+                            fs.mkdirSync(dir);
+                        }
+
+                        vidAudioOutput = path.resolve(__dirname, 'tmp/' + randomStr(8) + extension);
+                        vidMainOutput = path.resolve(__dirname, 'tmp/' + randomStr(8) + extension);
                     }
 
-                    io.sockets.to(socketId).emit('send notification', statusCodes.info, `Quality: ${quality}`);
-                    let stream = ytdl.downloadFromInfo(info, { quality: quality });
+                    // for each quality value, do our stuff
+                    switch (quality) {
+                        case 'mp3low':
+                            exportQuality = 'lowestaudio';
+                            audioBitrate = 128;
+                            break;
+                        case 'mp3best':
+                            exportQuality = 'highestaudio';
+                            audioBitrate = 320;
+                            break;
+                        // not needed for now
+                        /*case 'mp4video':
+                            exportQuality = 'highestvideo';
+                            audioBitrate = 320;
+                            break;*/
+                    }
 
-                    io.sockets.to(socketId).emit('send notification', statusCodes.info, 'Converting to mp3...');
+                    io.sockets.to(socketId).emit('send notification', statusCodes.info, `Downloading...`);
 
-                    // set headers for audio download        
-                    res.setHeader('Content-Type', 'audio/mpeg3');
-                    //var disposition = `attachment; filename="${title}.mp3"; filename*=UTF-8''${ encodeURIComponent(title + '.mp3') }`;
-                    res.setHeader('Content-Disposition', contentDisposition(title + '.mp3'));
+                    const onProgress = (chunkLength, downloaded, total) => {
+                        const percent = downloaded / total;
+                        readline.cursorTo(process.stdout, 0);
+                        process.stdout.write(`${(percent * 100).toFixed(2)}% downloaded `);
+                        process.stdout.write(`(${(downloaded / 1024 / 1024).toFixed(2)}MB of ${(total / 1024 / 1024).toFixed(2)}MB)`);
+                    };
 
-                    // mp3 conversion using ffmpeg
-                    ffmpeg()
-                        .input(stream)
-                        .toFormat('mp3')
-                        .audioBitrate(audioBitrate)
-                        .on('error', (err, stdout, stderr) => {
-                            io.sockets.to(socketId).emit('send notification', statusCodes.error, `ffmpeg conversion stream closed: ${err.message}`);
-                            log(`[socket: ${socketId}] user stopped conversion`);
-                        })
-                        .on('progress', (p) => {
-                            log(`[socket: ${socketId}] ${p.targetSize}kb downloaded`);
-                        })
-                        .on('end', () => {
-                            log(`[socket: ${socketId}] DOWNLOAD FINISHED!`);
-                            io.sockets.to(socketId).emit('send notification', statusCodes.success, 'Successfully downloaded!');
-                        })
-                        .pipe(res, { end: true });
+                    // set headers for audio download
+                    res.setHeader('Content-Type', contentType);
+                    res.setHeader('Content-Disposition', contentDisposition(title + extension));
+
+                    console.log('downloading audio track');
+
+                    if (isVideo) {
+                        ytdl.downloadFromInfo(info, { filter: format => format.container === 'mp4' && !format.qualityLabel })
+                            .on('error', console.error)
+                            .on('progress', onProgress)
+
+                            // Write audio to file since ffmpeg supports only one input stream.
+                            .pipe(fs.createWriteStream(vidAudioOutput))
+                            .on('finish', () => {
+                                console.log('\ndownloading video');
+                                const video = ytdl.downloadFromInfo(info, {
+                                    filter: format => format.container === 'mp4' && !format.audioEncoding,
+                                });
+                                video.on('progress', onProgress);
+
+                                io.sockets.to(socketId).emit('send notification', statusCodes.info, 'Converting to MP4...');
+
+                                ffmpeg()
+                                    .input(video)
+                                    .videoCodec('copy')
+                                    .input(vidAudioOutput)
+                                    .audioCodec('copy')
+                                    .save(vidMainOutput)
+                                    .on('error', (err, stdout, stderro) => {
+                                        io.sockets.to(socketId).emit('send notification', statusCodes.error, `ffmpeg conversion stream closed: ${err.message}`);
+                                        log(`[socket: ${socketId}] VIDEO: user stopped conversion`);
+                                    })
+                                    .on('end', () => {
+                                        
+                                        fs.unlink(vidAudioOutput, err => {
+                                            if (err) console.error(err);
+                                            else {
+                                                console.log(`\nfinished downloading, saved to ${vidMainOutput}`)
+
+                                                log(`[socket: ${socketId}] VIDEO: DOWNLOAD FINISHED!`);
+                                                io.sockets.to(socketId).emit('send notification', statusCodes.success, 'Successfully downloaded!');
+
+                                                var fileStream = fs.createReadStream(vidMainOutput);
+                                                fileStream.pipe(res, { end: true });
+
+                                                fs.unlink(vidMainOutput, err => {
+                                                    if (err) console.error(err);
+                                                });
+
+                                                return;
+                                            }
+                                        });
+                                    });
+                                    // .pipe(res, { end: true });
+                            });
+                    } else {
+                        // ytdl stream
+                        const stream = ytdl.downloadFromInfo(info, { quality: exportQuality });
+                        stream.on('progress', onProgress);
+
+                        io.sockets.to(socketId).emit('send notification', statusCodes.info, 'Converting to MP3...');
+
+                        // mp3 conversion using ffmpeg
+                        ffmpeg()
+                            .input(stream)
+                            .toFormat('mp3')
+                            .audioBitrate(audioBitrate)
+                            .on('error', (err, stdout, stderr) => {
+                                io.sockets.to(socketId).emit('send notification', statusCodes.error, `ffmpeg conversion stream closed: ${err.message}`);
+                                log(`[socket: ${socketId}] AUDIO: user stopped conversion`);
+                            })
+                            .on('end', () => {
+                                log(`[socket: ${socketId}] AUDIO: DOWNLOAD FINISHED!`);
+                                io.sockets.to(socketId).emit('send notification', statusCodes.success, 'Successfully downloaded!');
+                            })
+                            .pipe(res, { end: true });
+                        
+                        return;
+                    }
                 }
             }
         });
