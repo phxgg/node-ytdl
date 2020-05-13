@@ -280,7 +280,7 @@ app.post('/convert', (req, res) => {
     var socketId = req.body.socketId;
 
     // Check for quality value
-    var allowedQualities = ['mp3low', 'mp3best', 'mp4video'];
+    var allowedQualities = ['mp3low', 'mp3best'/*, 'mp4video'*/];
 
     if(allowedQualities.indexOf(quality) == -1) { // index not found
         io.sockets.to(socketId).emit('send notification', statusCodes.error, 'Invalid quality value.');
