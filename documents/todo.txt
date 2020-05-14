@@ -1,6 +1,7 @@
 TODO:
 
-public/js/main.js#50
+public/js/main.js#50 (revokeObjectURL)
+create video download (heroku responds with timeout when converting a big video)
 
 Not in priority:
 

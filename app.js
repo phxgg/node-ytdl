@@ -344,7 +344,7 @@ app.post('/convert', (req, res) => {
                             break;*/
                     }
 
-                    io.sockets.to(socketId).emit('send notification', statusCodes.info, `Downloading...`);
+                    io.sockets.to(socketId).emit('send notification', statusCodes.info, 'Downloading...');
 
                     // ytdl progress
                     const onProgress = (chunkLength, downloaded, total) => {
@@ -361,12 +361,14 @@ app.post('/convert', (req, res) => {
                     console.log('downloading audio track');
 
                     if (isVideo) {
+                        // download audio
                         ytdl.downloadFromInfo(info, { filter: format => format.container === 'mp4' && !format.qualityLabel })
                             .on('error', console.error)
                             .on('progress', onProgress)
 
                             // Write audio to file since ffmpeg supports only one input stream.
                             .pipe(fs.createWriteStream(vidAudioOutput))
+                            // When finished downloading the audio, start downloading the video
                             .on('finish', () => {
                                 console.log('\ndownloading video');
                                 const video = ytdl.downloadFromInfo(info, {
@@ -376,6 +378,7 @@ app.post('/convert', (req, res) => {
 
                                 io.sockets.to(socketId).emit('send notification', statusCodes.info, 'Converting to MP4...');
 
+                                // combine video & audio files to one single video file
                                 ffmpeg()
                                     .input(video)
                                     .videoCodec('copy')
@@ -387,7 +390,7 @@ app.post('/convert', (req, res) => {
                                         log(`[socket: ${socketId}] VIDEO: user stopped conversion`);
                                     })
                                     .on('end', () => {
-                                        
+                                        // delete audio file
                                         fs.unlink(vidAudioOutput, err => {
                                             if (err) console.error(err);
                                             else {
@@ -396,13 +399,15 @@ app.post('/convert', (req, res) => {
                                                 log(`[socket: ${socketId}] VIDEO: DOWNLOAD FINISHED!`);
                                                 io.sockets.to(socketId).emit('send notification', statusCodes.success, 'Successfully downloaded!');
 
+                                                // read the final video file and pipe it
                                                 var fileStream = fs.createReadStream(vidMainOutput);
                                                 fileStream.pipe(res, { end: true });
 
+                                                // delete final video file
                                                 fs.unlink(vidMainOutput, err => {
                                                     if (err) console.error(err);
                                                 });
-
+                                                
                                                 return;
                                             }
                                         });
