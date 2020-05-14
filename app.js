@@ -315,6 +315,8 @@ app.post('/convert', (req, res) => {
                     let vidAudioOutput = null;
                     let vidMainOutput = null;
 
+                    // create /tmp folder if it does't exist
+                    // also define audio & video output paths if it's a video
                     if (isVideo) {
                         let dir = './tmp';
                         if (!fs.existsSync(dir)) {
@@ -344,6 +346,7 @@ app.post('/convert', (req, res) => {
 
                     io.sockets.to(socketId).emit('send notification', statusCodes.info, `Downloading...`);
 
+                    // ytdl progress
                     const onProgress = (chunkLength, downloaded, total) => {
                         const percent = downloaded / total;
                         readline.cursorTo(process.stdout, 0);
@@ -351,7 +354,7 @@ app.post('/convert', (req, res) => {
                         process.stdout.write(`(${(downloaded / 1024 / 1024).toFixed(2)}MB of ${(total / 1024 / 1024).toFixed(2)}MB)`);
                     };
 
-                    // set headers for audio download
+                    // set headers
                     res.setHeader('Content-Type', contentType);
                     res.setHeader('Content-Disposition', contentDisposition(title + extension));
 
