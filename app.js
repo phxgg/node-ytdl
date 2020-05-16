@@ -271,7 +271,9 @@ app.get('/generate', (req, res) => {
 });
 
 app.post('/contact', hcaptcha.middleware.validate(config.captcha.secretKey), (req, res) => {
-    res.json({message: 'verified!', hcaptcha: req.hcaptcha});
+    res.status(200).send('wat');
+    return;
+    //res.json({message: 'verified!', hcaptcha: req.hcaptcha});
 });
 
 app.post('/convert', (req, res) => {
