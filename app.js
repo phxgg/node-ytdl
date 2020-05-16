@@ -14,7 +14,10 @@ const ffmpeg                = require('fluent-ffmpeg');
 const fs                    = require('fs');
 const readline              = require('readline');
 const hcaptcha              = require('express-hcaptcha');
+const moment                = require('moment');
+const momentDurationFormat  = require('moment-duration-format');
 
+momentDurationFormat(moment);
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 const app = express();
@@ -251,20 +254,6 @@ app.get('/contact', (req, res) => {
     });
 })
 
-app.get('/getinfo', (req, res) => {
-    res.status(200).send('Not much to see here :|');
-    return;
-
-    /*var url = req.query.url;
-    var socketId = (req.query.socketId) ? req.query.socketId : 'undefined';
-
-    res.setHeader('Content-Type', 'application/json');
-
-    getInfo(socketId, url, function(statusCode, info) {
-        return res.send(JSON.stringify( {statusCode: statusCode, info: info }, null, 2 ));
-    });*/
-});
-
 app.get('/generate', (req, res) => {
     res.status(200).send('wat');
     return;
@@ -274,6 +263,38 @@ app.post('/contact', hcaptcha.middleware.validate(config.captcha.secretKey), (re
     res.status(200).send('wat');
     return;
     //res.json({message: 'verified!', hcaptcha: req.hcaptcha});
+});
+
+app.post('/videoinfo', (req, res) => {
+    var url = req.body.url;
+    var socketId = (req.body.socketId) ? req.body.socketId : 'undefined';
+
+    //res.setHeader('Content-Type', 'application/json');
+
+    getInfo(socketId, url, function(statusCode, info) {
+        var data = {};
+
+        if (statusCode == statusCodes.error) {
+            data = {
+                statusCode: statusCode,
+                info: info
+            };
+        } else {
+            data = {
+                statusCode: statusCode,
+                info: {
+                    title: info.title,
+                    thumbnail: info.player_response.videoDetails.thumbnail.thumbnails[0],
+                    likes: info.likes,
+                    dislikes: info.dislikes,
+                    views: info.player_response.videoDetails.viewCount,
+                    length: moment.duration(info.length_seconds, 'seconds').format('HH:mm:ss')
+                }
+            }
+        }
+
+        res.json(data);
+    });
 });
 
 app.post('/convert', (req, res) => {
