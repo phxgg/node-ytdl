@@ -54,11 +54,11 @@ $('#btnConvert').click(function(e) {
     });
 });
 
-$('#btnContact').click(function (e) {
+/*$('#btnContact').click(function (e) {
     e.preventDefault();
 
     // todo
-})
+})*/
 
 // tooltips
 $(function () {

@@ -18,6 +18,7 @@
     "ejs": "^3.0.1",
     "enum": "^2.5.0",
     "express": "^4.17.1",
+    "express-hcaptcha": "0.0.2",
     "express-session": "^1.17.0",
     "ffmpeg": "0.0.4",
     "fluent-ffmpeg": "^2.1.2",

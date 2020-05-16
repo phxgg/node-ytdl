@@ -13,6 +13,7 @@ const ffmpegPath            = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg                = require('fluent-ffmpeg');
 const fs                    = require('fs');
 const readline              = require('readline');
+const hcaptcha              = require('express-hcaptcha');
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
@@ -269,9 +270,8 @@ app.get('/generate', (req, res) => {
     return;
 });
 
-app.post('/contact', (req, res) => {
-    res.status(200).send('wat');
-    return;
+app.post('/contact', hcaptcha.middleware.validate(config.captcha.secretKey), (req, res) => {
+    res.json({message: 'verified!', hcaptcha: req.hcaptcha});
 });
 
 app.post('/convert', (req, res) => {
@@ -388,6 +388,7 @@ app.post('/convert', (req, res) => {
                                     .on('error', (err, stdout, stderro) => {
                                         io.sockets.to(socketId).emit('send notification', statusCodes.error, `ffmpeg conversion stream closed: ${err.message}`);
                                         log(`[socket: ${socketId}] VIDEO: user stopped conversion`);
+                                        video.destroy(); // stop ytdl from keeping on downloading
                                     })
                                     .on('end', () => {
                                         // delete audio file
@@ -429,6 +430,7 @@ app.post('/convert', (req, res) => {
                             .on('error', (err, stdout, stderr) => {
                                 io.sockets.to(socketId).emit('send notification', statusCodes.error, `ffmpeg conversion stream closed: ${err.message}`);
                                 log(`[socket: ${socketId}] AUDIO: user stopped conversion`);
+                                stream.destroy(); // stop ytdl from keeping on downloading
                             })
                             .on('end', () => {
                                 log(`[socket: ${socketId}] AUDIO: DOWNLOAD FINISHED!`);

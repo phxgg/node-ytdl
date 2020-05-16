@@ -1,12 +1,9 @@
 <%- include('partials/header') %>
 
-<div class="alert alert-warning">
+<!--<div class="alert alert-warning">
     The contact form is under construction.
-</div>
+</div>-->
 
-<!-- your messages won't be sent even if you uncomment this code -->
-
-<!--
 <h3>Send us a message</h3>
 
 <br>
@@ -20,10 +17,12 @@
     <div class="input group mb-3">
         <textarea name="message" id="message" class="form-control" style="min-height: 150px;" placeholder="Your message..." required></textarea>
     </div>
+    <div class="input group mb-3">
+        <div class="h-captcha" data-sitekey="8187c753-8e1c-4b21-9f97-2347d6ad8677"></div>
+    </div>
     <div class="input-group">
         <input type="submit" name="contact" id="btnContact" class="btn btn-outline-success" value="Send">
     </div>
 </form>
--->
 
 <%- include('partials/footer') %>
