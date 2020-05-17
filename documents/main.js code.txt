@@ -1,4 +1,4 @@
-$('input[name="url"]').change(function () {
+$('input[name="url"]').on('input', function () {
     var url = $(this).val();
 
     if (helper.isValidYtLink(url)) {
@@ -8,7 +8,6 @@ $('input[name="url"]').change(function () {
         var sid     = socketId;
 
         $.ajax({
-
             url: '/videoinfo',
             data: {
                 _csrf       : csrf,
@@ -24,7 +23,9 @@ $('input[name="url"]').change(function () {
 
                 switch (statusCode) {
                     case 'error':
-                        // do nothing
+                        $('#yt-videoinfo').hide();
+                        $('#url').addClass('is-invalid');
+                        $('#labelInvalidLink').show();
                         break;
                     case 'success':
                         $('#yt-thumbnail').html(`<a href="${url}" target="_blank"><img src="${info.thumbnail.url}"></a>`);
@@ -35,6 +36,9 @@ $('input[name="url"]').change(function () {
 
                         var dislikePercentage = Math.round(dislikes/likes * 100);
                         var likePercentage = 100 - dislikePercentage;
+
+                        $('#url').removeClass('is-invalid');
+                        $('#labelInvalidLink').hide();
 
                         $('#yt-views').html(`Views: ${helper.num(info.views)}`);
 
@@ -49,10 +53,11 @@ $('input[name="url"]').change(function () {
                         $('#yt-likes').html(`${helper.num(info.likes)}`);
                         $('#yt-dislikes').html(`${helper.num(info.dislikes)}`);
 
-                        $('#yt-loading').hide();
                         $('#yt-videoinfo').show();
                         break;
                 }
+
+                $('#yt-loading').hide();
             }
         });
     }
