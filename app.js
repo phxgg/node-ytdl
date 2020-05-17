@@ -211,15 +211,13 @@ function randomStr(length) {
     return result;
 }
 
-function getInfo(socketId, url, callback) {
+function getInfo(url, callback) {
     if(!url || !ytdl.validateURL(url)) {
         callback(statusCodes.error, 'Invalid YouTube Link.');
         return;
     }
 
     let videoID = ytdl.getURLVideoID(url);
-
-    io.sockets.to(socketId).emit('send notification', statusCodes.info, 'Grabbing video info...');
 
     ytdl.getInfo(videoID, (err, info) => {
 //        if (err) throw err;
@@ -271,7 +269,7 @@ app.post('/videoinfo', (req, res) => {
 
     //res.setHeader('Content-Type', 'application/json');
 
-    getInfo(socketId, url, function(statusCode, info) {
+    getInfo(url, function(statusCode, info) {
         var data = {};
 
         if (statusCode == statusCodes.error) {
@@ -309,8 +307,10 @@ app.post('/convert', (req, res) => {
         io.sockets.to(socketId).emit('send notification', statusCodes.error, 'Invalid quality value.');
         res.status(204).end();
     } else {
-        // Grab video info
-        getInfo(socketId, url, function(statusCode, info) {
+        // Get video info
+        io.sockets.to(socketId).emit('send notification', statusCodes.info, 'Getting video info...');
+
+        getInfo(url, function(statusCode, info) {
             if(statusCode == statusCodes.error) {
                 io.sockets.to(socketId).emit('send notification', statusCodes.error, info);
                 res.status(204).end();

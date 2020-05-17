@@ -71,11 +71,15 @@
 
     <!-- form -->
     <div class="input-group mb-3">
-        <input type="text" name="url" id="url" class="form-control" placeholder="YouTube Link" aria-describedby="btnConvert" value="<%= url %>" required>
+        <input type="text" name="url" id="url" class="form-control" data-toggle="tooltip" data-placement="top" title="" placeholder="YouTube Link" aria-describedby="btnConvert" value="<%= url %>" required>
         <div class="input-group-append">
             <input type="submit" name="convert" id="btnConvert" class="btn btn-outline-success" value="Convert">
         </div>
     </div>
+
+    <small class="text-danger" id="labelInvalidLink" style="display: none;">
+        Invalid YouTube Link.
+    </small>
 
     <h6>quality</h6>
     
