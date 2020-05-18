@@ -2,11 +2,12 @@ TODO:
 
 public/js/main.js#50 (revokeObjectURL)
 create video download (heroku responds with timeout when converting a big video)
+Maybe show video thumbnail and other info when filling the URL, before clicking Convert (also find a way to keep the videoInfo stored so we don't have to re-grab the info when clicking convert)
 
 Not in priority:
 
-Maybe show video thumbnail and other info when filling the URL (before clicking Convert)
 Do not allow users to spam with too many post requests
 Login/Register system
-Subscription system for better mp3 quality & video download
+Subscription system
+better mp3 quality, video download & spleeter track seperator for subscribed users
 GetInfo API for subscribed users
