@@ -14,10 +14,8 @@ const ffmpeg                = require('fluent-ffmpeg');
 const fs                    = require('fs');
 const readline              = require('readline');
 const hcaptcha              = require('express-hcaptcha');
-const moment                = require('moment');
-const momentDurationFormat  = require('moment-duration-format');
+const { RateLimiterMemory } = require('rate-limiter-flexible');
 
-momentDurationFormat(moment);
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 const app = express();
@@ -179,12 +177,31 @@ if (config.discord.enableBot)
 // Web Server
 const csrfProtection = csrf();
 
+const rateLimiter = new RateLimiterMemory({
+    points: 1, // 1 request
+    duration: 3, // per 3 seconds
+});
+
+const rateLimiterMiddleware = (req, res, next) => {
+    rateLimiter.consume(req.ip) // or req.ip
+        .then(() => {
+            next();
+    })
+    .catch((rejRes) => {
+        res.status(429).send('Too many requests. Please slow down.');
+    });
+};
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false })); // false
 app.use(cookieParser());
 app.use(session({ secret: config.web.sessionKey, resave: false, saveUninitialized: false }));
 app.use(csrfProtection);
+
+app.use('/convert', rateLimiterMiddleware);
+app.use('/contact', rateLimiterMiddleware);
+app.use('/videoinfo', rateLimiterMiddleware);
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '/views'));
@@ -211,21 +228,33 @@ function randomStr(length) {
     return result;
 }
 
-function getInfo(url, callback) {
+function getInfo(url, basic, callback) {
     if(!url || !ytdl.validateURL(url)) {
         callback(statusCodes.error, 'Invalid YouTube Link.');
         return;
     }
 
-    let videoID = ytdl.getURLVideoID(url);
+    //let videoID = ytdl.getURLVideoID(url);
 
-    ytdl.getInfo(videoID, (err, info) => {
+    if (basic) {
+        ytdl.getBasicInfo(url, (err, info) => {
 //        if (err) throw err;
-        if (err)
-            callback(statusCodes.error, err.message);
-        else        
-            callback(statusCodes.success, info);
-    });
+            if (err)
+                callback(statusCodes.error, err.message);
+            else        
+                callback(statusCodes.success, info);
+        });
+    } else {
+        ytdl.getInfo(url, (err, info) => {
+//        if (err) throw err;
+            if (err)
+                callback(statusCodes.error, err.message);
+            else        
+                callback(statusCodes.success, info);
+        });
+    }
+
+    
 }
 
 //-----------------------------------
@@ -269,7 +298,8 @@ app.post('/videoinfo', (req, res) => {
 
     //res.setHeader('Content-Type', 'application/json');
 
-    getInfo(url, function(statusCode, info) {
+    // get basic info
+    getInfo(url, true, function(statusCode, info) {
         var data = {};
 
         if (statusCode == statusCodes.error) {
@@ -281,12 +311,13 @@ app.post('/videoinfo', (req, res) => {
             data = {
                 statusCode: statusCode,
                 info: {
+                    video_id: info.video_id,
                     title: info.title,
-                    thumbnail: info.player_response.videoDetails.thumbnail.thumbnails[0],
+                    //thumbnail: info.player_response.videoDetails.thumbnail.thumbnails[1], // only works on full info
                     likes: info.likes,
                     dislikes: info.dislikes,
                     views: info.player_response.videoDetails.viewCount,
-                    length: moment.duration(info.length_seconds, 'seconds').format('HH:mm:ss')
+                    length: info.length_seconds
                 }
             }
         }
@@ -310,7 +341,7 @@ app.post('/convert', (req, res) => {
         // Get video info
         io.sockets.to(socketId).emit('send notification', statusCodes.info, 'Getting video info...');
 
-        getInfo(url, function(statusCode, info) {
+        getInfo(url, false, function(statusCode, info) {
             if(statusCode == statusCodes.error) {
                 io.sockets.to(socketId).emit('send notification', statusCodes.error, info);
                 res.status(204).end();

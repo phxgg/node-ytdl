@@ -10,54 +10,15 @@
 </div>
 
 <!-- yt video info -->
-<div class="card border-primary mb-3" id="yt-videoinfo" style="display: none;">
+<div class="card border-primary mb-3" id="yt-videoinfo" style="display: none; margin: auto; max-width: 380px; max-height: 235px;">
     <div class="row no-gutters">
-        <div class="col-md-4" id="yt-thumbnail" style="padding: 5px;">
-            <!-- img src -->
-        </div>
-        <div class="col-md-8">
-            <div class="card-body">
-                <h5 class="card-title" id="yt-title"><i class="text-muted">Title</i></h5>
-                <p class="card-text">
-                    
-                    <i class="text-muted" id="yt-views">Views</i><br>
-
-                    <div class="progress">
-                        <!-- like percentage -->
-                        <div
-                            class="progress-bar progress-bar-striped bg-success"
-                            role="progressbar"
-                            id="yt-likeperc"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                            data-toggle="tooltip"
-                            data-placement="bottom"
-                            title="">
-                        </div>
-
-                        <!-- dislike percentage -->
-                        <div
-                            class="progress-bar progress-bar-striped bg-danger"
-                            role="progressbar"
-                            id="yt-dislikeperc"
-                            style="width: 0%;"
-                            aria-valuenow="0"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                            data-toggle="tooltip"
-                            data-placement="bottom"
-                            title="">
-                        </div>
-                    </div>
-
-                    <i class="text-success" id="yt-likes">Likes</i> /
-                    <i class="text-danger" id="yt-dislikes">Dislikes</i>
-                </p>
-            </div>
+        <div class="col-md-4" id="yt-embed" style="padding: 5px;">
+            <!-- yt embed code -->
         </div>
     </div>
 </div>
 
+<!-- move on -->
 <% if(url) { %>
 <div class="alert alert-info">Your link is already filled in :) Just click <b>Convert</b>!</div>
 <% } %>

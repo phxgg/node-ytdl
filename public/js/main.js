@@ -54,7 +54,7 @@ $('#btnConvert').click(function(e) {
     });
 });
 
-// url on key change
+// url on input
 
 $('#btnContact').click(function (e) {
     e.preventDefault();
