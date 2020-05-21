@@ -199,9 +199,9 @@ app.use(cookieParser());
 app.use(session({ secret: config.web.sessionKey, resave: false, saveUninitialized: false }));
 app.use(csrfProtection);
 
-app.use('/convert', rateLimiterMiddleware);
-app.use('/contact', rateLimiterMiddleware);
-app.use('/videoinfo', rateLimiterMiddleware);
+//app.use('/convert', rateLimiterMiddleware);
+//app.use('/contact', rateLimiterMiddleware);
+//app.use('/videoinfo', rateLimiterMiddleware);
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '/views'));
