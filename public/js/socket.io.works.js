@@ -15,7 +15,7 @@ socket.on('send notification', function(statusCode, message) {
     var color = null;
     var randomId = 'notif_id_' + helper.randomStr(5);
 
-    //colors from bootstrap
+    // colors from bootstrap
     switch(statusCode) {
         case 'primary':
             color = '#007aff';
