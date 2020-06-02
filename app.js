@@ -177,58 +177,6 @@ if (config.discord.enableBot)
 // CSRF Protection
 const csrfProtection = csrf();
 
-// This middleware will send a byte each 15 seconds. Using this we can bypass Heroku's 30 second timeout
-const extendTimeoutMiddleware = (req, res, next) => {
-    const space = ' ';
-    let isFinished = false;
-    let isDataSent = false;
-
-    // Only extend the timeout for /convert requests
-    if (!req.url.includes('/convert')) {
-        next();
-        return;
-    }
-
-    req.once('finish', () => {
-        isFinished = true;
-    });
-
-    req.once('end', () => {
-        isFinished = true;
-    });
-
-    req.once('close', () => {
-        isFinished = true;
-    });
-
-    req.on('data', (data) => {
-        // Look for something other than our blank space to indicate that real data is now being sent to the client
-        if (data !== space) {
-            isDataSent = true;
-        }
-    });
-
-    const waitAndSend = () => {
-        setTimeout(() => {
-            // If the response hasn't finished and hasn't sent any data back...
-            if (!isFinished && !isDataSent) {
-                // Need to write the status code/headers if they haven't been sent yet
-                if (!res.headersSent) {
-                    res.writeHead(202);
-                }
-
-                res.write(space);
-
-                // Wait another 15 seconds
-                waitAndSend();
-            }
-        }, 15 * 1000); // 15 seconds
-    };
-
-    waitAndSend();
-    next();
-};
-
 // Rate Limiter
 const rateLimiter = new RateLimiterMemory({
     points: 6, // 6 points
@@ -253,7 +201,6 @@ app.use(cookieParser());
 app.use(session({ secret: config.web.sessionKey, resave: false, saveUninitialized: false }));
 
 app.use(csrfProtection);
-app.use(extendTimeoutMiddleware);
 
 app.use('/convert', rateLimiterMiddleware);
 app.use('/contact', rateLimiterMiddleware);
