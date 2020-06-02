@@ -174,16 +174,69 @@ if (config.discord.enableBot)
     // End Discord Bot   
 }
 
-// Web Server
+// CSRF Protection
 const csrfProtection = csrf();
 
+// This middleware will send a byte each 15 seconds. Using this we can bypass Heroku's 30 second timeout
+const extendTimeoutMiddleware = (req, res, next) => {
+    const space = ' ';
+    let isFinished = false;
+    let isDataSent = false;
+
+    // Only extend the timeout for /convert requests
+    if (!req.url.includes('/convert')) {
+        next();
+        return;
+    }
+
+    req.once('finish', () => {
+        isFinished = true;
+    });
+
+    req.once('end', () => {
+        isFinished = true;
+    });
+
+    req.once('close', () => {
+        isFinished = true;
+    });
+
+    req.on('data', (data) => {
+        // Look for something other than our blank space to indicate that real data is now being sent to the client
+        if (data !== space) {
+            isDataSent = true;
+        }
+    });
+
+    const waitAndSend = () => {
+        setTimeout(() => {
+            // If the response hasn't finished and hasn't sent any data back...
+            if (!isFinished && !isDataSent) {
+                // Need to write the status code/headers if they haven't been sent yet
+                if (!res.headersSent) {
+                    res.writeHead(202);
+                }
+
+                res.write(space);
+
+                // Wait another 15 seconds
+                waitAndSend();
+            }
+        }, 15 * 1000); // 15 seconds
+    };
+
+    waitAndSend();
+    next();
+};
+
+// Rate Limiter
 const rateLimiter = new RateLimiterMemory({
-    points: 1, // 1 request
-    duration: 3, // per 3 seconds
+    points: 6, // 6 points
+    duration: 1, // per second
 });
 
 const rateLimiterMiddleware = (req, res, next) => {
-    rateLimiter.consume(req.ip) // or req.ip
+    rateLimiter.consume(req.ip, 2)
         .then(() => {
             next();
     })
@@ -192,16 +245,19 @@ const rateLimiterMiddleware = (req, res, next) => {
     });
 };
 
+// Web Server Settings
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false })); // false
 app.use(cookieParser());
 app.use(session({ secret: config.web.sessionKey, resave: false, saveUninitialized: false }));
-app.use(csrfProtection);
 
-//app.use('/convert', rateLimiterMiddleware);
-//app.use('/contact', rateLimiterMiddleware);
-//app.use('/videoinfo', rateLimiterMiddleware);
+app.use(csrfProtection);
+app.use(extendTimeoutMiddleware);
+
+app.use('/convert', rateLimiterMiddleware);
+app.use('/contact', rateLimiterMiddleware);
+app.use('/videoinfo', rateLimiterMiddleware);
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '/views'));
@@ -332,7 +388,7 @@ app.post('/convert', (req, res) => {
     var socketId = req.body.socketId;
 
     // Check for quality value
-    var allowedQualities = ['mp3low', 'mp3best'/*, 'mp4video'*/];
+    var allowedQualities = ['mp3low', 'mp3best', 'mp4video'];
 
     if(allowedQualities.indexOf(quality) == -1) { // index not found
         io.sockets.to(socketId).emit('send notification', statusCodes.error, 'Invalid quality value.');
