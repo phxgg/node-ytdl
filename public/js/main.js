@@ -34,13 +34,7 @@ $('#btnConvert').click( function(e) {
         },
         method: 'POST',
 
-        success: function (res, status, xhr) {
-            /*$('#btnConvert').html('Convert');
-            $('#btnConvert').removeAttr('disabled');
-
-            $('#dl-percentage').html('');
-            $('#dl-percentage').hide();*/
-            
+        success: function (res, status, xhr) {            
             var header = xhr.getResponseHeader('Content-Disposition');
 
             // if header is null, this means that we already got a response message. Otherwise move on to file download

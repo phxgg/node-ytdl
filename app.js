@@ -408,7 +408,7 @@ app.post('/convert', (req, res) => {
                         // process.stdout.write(`(${(downloaded / 1024 / 1024).toFixed(2)}MB of ${(total / 1024 / 1024).toFixed(2)}MB)`);
 
                         io.sockets.to(socketId).emit('send downloadPercentage',
-                            `${(percent * 100).toFixed(2)}% downloaded (${(downloaded / 1024 / 1024).toFixed(2)}MB of ${(total / 1024 / 1024).toFixed(2)}MB)`);
+                            `Downloaded <b>${(percent * 100).toFixed(2)}%</b> (${(downloaded / 1024 / 1024).toFixed(2)}MB of ${(total / 1024 / 1024).toFixed(2)}MB)`);
                     };
 
                     console.log(`[socket: ${socketId}]: STARTED DOWNLOAD`);
