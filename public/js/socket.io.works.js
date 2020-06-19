@@ -43,7 +43,7 @@ socket.on('send notification', (statusCode, message) => {
         $('#btnConvert').html('Convert');
         $('#btnConvert').removeAttr('disabled');
 
-        $('#dl-percentage').html('Your video is converting, do not close this window :)');
+        $('#dl-percentage').html('Your video is converting, do not close this window <i class="far fa-grin-beam"></i>');
         $('#dl-percentage').hide();
     }
     

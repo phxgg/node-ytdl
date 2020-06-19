@@ -408,7 +408,7 @@ app.post('/convert', (req, res) => {
                         // process.stdout.write(`(${(downloaded / 1024 / 1024).toFixed(2)}MB of ${(total / 1024 / 1024).toFixed(2)}MB)`);
 
                         io.sockets.to(socketId).emit('send downloadPercentage',
-                            `Downloaded <b>${(percent * 100).toFixed(2)}%</b> (${(downloaded / 1024 / 1024).toFixed(2)}MB of ${(total / 1024 / 1024).toFixed(2)}MB)`);
+                            `Your video is converting, do not close this window <i class="far fa-grin-beam"></i><br>Downloaded <b>${(percent * 100).toFixed(2)}%</b> (${(downloaded / 1024 / 1024).toFixed(2)}MB of ${(total / 1024 / 1024).toFixed(2)}MB)`);
                     };
 
                     console.log(`[socket: ${socketId}]: STARTED DOWNLOAD`);
