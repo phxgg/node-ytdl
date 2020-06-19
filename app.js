@@ -15,6 +15,7 @@ const fs                    = require('fs');
 const readline              = require('readline');
 const hcaptcha              = require('express-hcaptcha');
 const { RateLimiterMemory } = require('rate-limiter-flexible');
+// const ytdlWrapper           = require('youtube-dl');
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
@@ -335,7 +336,7 @@ app.post('/convert', (req, res) => {
     var socketId = req.body.socketId;
 
     // Check for quality value
-    var allowedQualities = ['mp3low', 'mp3best'/*, 'mp4video'*/];
+    var allowedQualities = ['mp3low', 'mp3best'/*, 'mp4best'*/];
 
     if(allowedQualities.indexOf(quality) == -1) { // index not found
         io.sockets.to(socketId).emit('send notification', statusCodes.error, 'Invalid quality value.');
@@ -343,7 +344,7 @@ app.post('/convert', (req, res) => {
     } else {
         // Get video info
         io.sockets.to(socketId).emit('send notification', statusCodes.info, 'Getting video info...');
-
+        
         getInfo(url, false, function(statusCode, info) {
             if(statusCode == statusCodes.error) {
                 io.sockets.to(socketId).emit('send notification', statusCodes.error, info);
@@ -394,11 +395,6 @@ app.post('/convert', (req, res) => {
                             exportQuality = 'highestaudio';
                             audioBitrate = 320;
                             break;
-                        // not needed for now
-                        /*case 'mp4video':
-                            exportQuality = 'highestvideo';
-                            audioBitrate = 320;
-                            break;*/
                     }
 
                     io.sockets.to(socketId).emit('send notification', statusCodes.info, 'Downloading...');
@@ -407,15 +403,19 @@ app.post('/convert', (req, res) => {
                     const onProgress = (chunkLength, downloaded, total) => {
                         const percent = downloaded / total;
                         readline.cursorTo(process.stdout, 0);
-                        process.stdout.write(`${(percent * 100).toFixed(2)}% downloaded `);
-                        process.stdout.write(`(${(downloaded / 1024 / 1024).toFixed(2)}MB of ${(total / 1024 / 1024).toFixed(2)}MB)`);
+
+                        // process.stdout.write(`${(percent * 100).toFixed(2)}% downloaded `);
+                        // process.stdout.write(`(${(downloaded / 1024 / 1024).toFixed(2)}MB of ${(total / 1024 / 1024).toFixed(2)}MB)`);
+
+                        io.sockets.to(socketId).emit('send downloadPercentage',
+                            `${(percent * 100).toFixed(2)}% downloaded (${(downloaded / 1024 / 1024).toFixed(2)}MB of ${(total / 1024 / 1024).toFixed(2)}MB)`);
                     };
+
+                    console.log(`[socket: ${socketId}]: STARTED DOWNLOAD`);
 
                     // set headers
                     res.setHeader('Content-Type', contentType);
                     res.setHeader('Content-Disposition', contentDisposition(title + extension));
-
-                    console.log('downloading audio track');
 
                     if (isVideo) {
                         // download audio
@@ -470,7 +470,6 @@ app.post('/convert', (req, res) => {
                                             }
                                         });
                                     });
-                                    // .pipe(res, { end: true });
                             });
                     } else {
                         // ytdl stream

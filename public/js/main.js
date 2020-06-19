@@ -1,7 +1,10 @@
 $('#btnConvert').click(function(e) {
     e.preventDefault();
 
-    $('#loading').show()
+    $('#btnConvert').attr('disabled', true);
+    $('#btnConvert').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Converting...');
+    
+    $('#dl-percentage').show();
 
     var csrf        = $('input[name="_csrf"]').val();
     var sid         = socketId; // $('input[name="socketId"]').val()
@@ -27,7 +30,11 @@ $('#btnConvert').click(function(e) {
         method: 'POST',
 
         success: function (res, status, xhr) {
-            $('#loading').hide();
+            /*$('#btnConvert').html('Convert');
+            $('#btnConvert').removeAttr('disabled');
+
+            $('#dl-percentage').html('');
+            $('#dl-percentage').hide();*/
             
             var header = xhr.getResponseHeader('Content-Disposition');
 

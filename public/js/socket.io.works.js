@@ -2,7 +2,7 @@ var socket = io();
 var socketId = null;
 
 // grab the socket id globally
-socket.on('connect', function() {
+socket.on('connect', () => {
     socketId = socket.id;
     console.log(`[socket connected]: ${socketId}`);
 
@@ -10,8 +10,13 @@ socket.on('connect', function() {
     $('input[name="socketId"]').val(socketId);
 });
 
+// download percentage
+socket.on('send downloadPercentage', (text) => {
+    $('#dl-percentage').html(text);
+});
+
 // convert notifications
-socket.on('send notification', function(statusCode, message) {
+socket.on('send notification', (statusCode, message) => {
     var color = null;
     var randomId = 'notif_id_' + helper.randomStr(5);
 
@@ -35,7 +40,11 @@ socket.on('send notification', function(statusCode, message) {
     }
 
     if(statusCode == 'success' || statusCode == 'error') {
-        $('#loading').hide();
+        $('#btnConvert').html('Convert');
+        $('#btnConvert').removeAttr('disabled');
+
+        $('#dl-percentage').html('');
+        $('#dl-percentage').hide();
     }
     
     $('#notifications-box').append(`
@@ -58,7 +67,7 @@ socket.on('send notification', function(statusCode, message) {
     
     $(`#${randomId}`).toast({ delay: 5000 });
     $(`#${randomId}`).toast('show');
-    $(`#${randomId}`).on('hidden.bs.toast', function(){
+    $(`#${randomId}`).on('hidden.bs.toast', () => {
         $(`#${randomId}`).remove();
     });
 
