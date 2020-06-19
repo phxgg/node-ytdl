@@ -1,20 +1,25 @@
-$('#btnConvert').click(function(e) {
+$('#btnConvert').click( function(e) {
     e.preventDefault();
-
-    $('#btnConvert').attr('disabled', true);
-    $('#btnConvert').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Converting...');
-    
-    $('#dl-percentage').show();
 
     var csrf        = $('input[name="_csrf"]').val();
     var sid         = socketId; // $('input[name="socketId"]').val()
     var url         = $('input[name="url"]').val();
     var quality     = $('input[name="quality"]:checked').val();
 
+    if (!url || !helper.isValidYtLink(url)) {
+        $('#url').addClass('is-invalid');
+        return;
+    }
+
     if (!sid) {
         alert('Socket ID is not set. Please try again.');
         return;
     }
+
+    $('#btnConvert').attr('disabled', true);
+    $('#btnConvert').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Converting...');
+    
+    $('#dl-percentage').show();
 
     $.ajax({            
         url: '/convert',
@@ -61,9 +66,19 @@ $('#btnConvert').click(function(e) {
     });
 });
 
-// url on input
+$('input[name="url"]').on('input', function() {
+    var url = $(this);
 
-$('#btnContact').click(function (e) {
+    if (helper.isValidYtLink(url.val())) {
+        url.removeClass('is-invalid');
+        url.addClass('is-valid');
+    } else {
+        url.removeClass('is-valid');
+        url.addClass('is-invalid');
+    }
+});
+
+$('#btnContact').click( function(e) {
     e.preventDefault();
 
     // todo
