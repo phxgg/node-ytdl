@@ -15,7 +15,6 @@ const fs                    = require('fs');
 const readline              = require('readline');
 const hcaptcha              = require('express-hcaptcha');
 const { RateLimiterMemory } = require('rate-limiter-flexible');
-// const ytdlWrapper           = require('youtube-dl');
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
@@ -376,13 +375,15 @@ app.post('/convert', (req, res) => {
                     // create /tmp folder if it does't exist
                     // also define audio & video output paths if it's a video
                     if (isVideo) {
-                        let dir = './tmp';
-                        if (!fs.existsSync(dir)) {
-                            fs.mkdirSync(dir);
+                        let dir = 'tmp';
+                        if (!fs.existsSync(`./${dir}`)) {
+                            fs.mkdirSync(`./${dir}`);
                         }
 
-                        vidAudioOutput = path.resolve(__dirname, 'tmp/' + randomStr(8) + extension);
-                        vidMainOutput = path.resolve(__dirname, 'tmp/' + randomStr(8) + extension);
+                        let id = info.video_id;
+                        
+                        vidAudioOutput = path.resolve(__dirname, `${dir}/${id}_${randomStr(8)}_audio_${extension}`);
+                        vidMainOutput = path.resolve(__dirname, `${dir}/${id}_${randomStr(8)}_video_${extension}`);
                     }
 
                     // for each quality value, do our stuff
@@ -407,8 +408,19 @@ app.post('/convert', (req, res) => {
                         // process.stdout.write(`${(percent * 100).toFixed(2)}% downloaded `);
                         // process.stdout.write(`(${(downloaded / 1024 / 1024).toFixed(2)}MB of ${(total / 1024 / 1024).toFixed(2)}MB)`);
 
+                        let videoText = (isVideo) ? '<br><small class="text-muted">After that, we will convert it to a video!</small>' : null;
+
                         io.sockets.to(socketId).emit('send downloadPercentage',
-                            `Your video is converting, do not close this window <i class="far fa-grin-beam"></i><br>Downloaded <b>${(percent * 100).toFixed(2)}%</b> (${(downloaded / 1024 / 1024).toFixed(2)}MB of ${(total / 1024 / 1024).toFixed(2)}MB)`);
+                            `Your audio is downloading, do not close this window <i class="far fa-grin-beam"></i><br>Downloaded <b>${(percent * 100).toFixed(2)}%</b>${videoText}`);
+                    };
+
+                    // only for video download
+                    const onProgressVideo = (chunkLength, downloaded, total) => {
+                        const percent = downloaded / total;
+                        readline.cursorTo(process.stdout, 0);
+
+                        io.sockets.to(socketId).emit('send downloadPercentage',
+                            `Converting... Do not close this window <i class="far fa-grin-beam"></i><br>Downloaded <b>${(percent * 100).toFixed(2)}%</b> (${(downloaded / 1024 / 1024).toFixed(2)}MB of ${(total / 1024 / 1024).toFixed(2)}MB)`);
                     };
 
                     console.log(`[socket: ${socketId}]: STARTED DOWNLOAD`);
@@ -418,59 +430,7 @@ app.post('/convert', (req, res) => {
                     res.setHeader('Content-Disposition', contentDisposition(title + extension));
 
                     if (isVideo) {
-                        // download audio
-                        ytdl.downloadFromInfo(info, { filter: format => format.container === 'mp4' && !format.qualityLabel })
-                            .on('error', console.error)
-                            .on('progress', onProgress)
-
-                            // Write audio to file since ffmpeg supports only one input stream.
-                            .pipe(fs.createWriteStream(vidAudioOutput))
-                            // When finished downloading the audio, start downloading the video
-                            .on('finish', () => {
-                                console.log('\ndownloading video');
-                                const video = ytdl.downloadFromInfo(info, {
-                                    filter: format => format.container === 'mp4' && !format.audioEncoding,
-                                });
-                                video.on('progress', onProgress);
-
-                                io.sockets.to(socketId).emit('send notification', statusCodes.info, 'Converting to MP4...');
-
-                                // combine video & audio files to one single video file
-                                ffmpeg()
-                                    .input(video)
-                                    .videoCodec('copy')
-                                    .input(vidAudioOutput)
-                                    .audioCodec('copy')
-                                    .save(vidMainOutput)
-                                    .on('error', (err, stdout, stderro) => {
-                                        io.sockets.to(socketId).emit('send notification', statusCodes.error, `ffmpeg conversion stream closed: ${err.message}`);
-                                        log(`[socket: ${socketId}] VIDEO: user stopped conversion`);
-                                        video.destroy(); // stop ytdl from keeping on downloading
-                                    })
-                                    .on('end', () => {
-                                        // delete audio file
-                                        fs.unlink(vidAudioOutput, err => {
-                                            if (err) console.error(err);
-                                            else {
-                                                console.log(`\nfinished downloading, saved to ${vidMainOutput}`)
-
-                                                log(`[socket: ${socketId}] VIDEO: DOWNLOAD FINISHED!`);
-                                                io.sockets.to(socketId).emit('send notification', statusCodes.success, 'Successfully downloaded!');
-
-                                                // read the final video file and pipe it
-                                                var fileStream = fs.createReadStream(vidMainOutput);
-                                                fileStream.pipe(res, { end: true });
-
-                                                // delete final video file
-                                                fs.unlink(vidMainOutput, err => {
-                                                    if (err) console.error(err);
-                                                });
-                                                
-                                                return;
-                                            }
-                                        });
-                                    });
-                            });
+                        // make video download
                     } else {
                         // ytdl stream
                         const stream = ytdl.downloadFromInfo(info, { quality: exportQuality });
@@ -484,7 +444,7 @@ app.post('/convert', (req, res) => {
                             .toFormat('mp3')
                             .audioBitrate(audioBitrate)
                             .on('error', (err, stdout, stderr) => {
-                                io.sockets.to(socketId).emit('send notification', statusCodes.error, `ffmpeg conversion stream closed: ${err.message}`);
+                                io.sockets.to(socketId).emit('send notification', statusCodes.error, `[audio] ffmpeg conversion stream closed: ${err.message}`);
                                 log(`[socket: ${socketId}] AUDIO: user stopped conversion`);
                                 stream.destroy(); // stop ytdl from keeping on downloading
                             })

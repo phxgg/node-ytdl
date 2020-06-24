@@ -56,6 +56,7 @@ window.onload = function () {
     if (quality) {
         if (quality == "mp3low") $('#customRadio1').click(); // or .checked=true; 
         else if (quality == "mp3best") $('#customRadio2').click();
+        //else if (quality == "mp4best") $('#customRadio3').click();
     }
 
     $('#customRadio').click(function() {
@@ -67,4 +68,9 @@ window.onload = function () {
         var radioValue = $("input[name='quality']:checked").val();
         setCookie('qualityCookie', radioValue, 30);
     });
+
+    /*$('#customRadio3').click(function() {
+        var radioValue = $("input[name='quality']:checked").val();
+        setCookie('qualityCookie', radioValue, 30);
+    });*/
 }
