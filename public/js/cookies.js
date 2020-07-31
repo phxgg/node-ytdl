@@ -26,6 +26,7 @@ window.onload = function () {
 
     if (weUseCookies) {
         if (weUseCookies == "ok") $('#cookies-info').hide();
+        else $('#cookies-info').show();
     }
 
     $('#cookies-ok').click(function() {
