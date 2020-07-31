@@ -24,9 +24,10 @@ window.onload = function () {
     // we use cookies thing
     var weUseCookies = getCookie('weUseCookies');
 
-    if (weUseCookies) {
-        if (weUseCookies == "ok") $('#cookies-info').hide();
-        else $('#cookies-info').show();
+    if (weUseCookies == "ok") {
+        $('#cookies-info').hide();
+    } else {
+        $('#cookies-info').show();
     }
 
     $('#cookies-ok').click(function() {
@@ -42,9 +43,15 @@ window.onload = function () {
     var quality = getCookie('qualityCookie');
 
     if (quality) {
-        if (quality == "mp3low") $('#customRadio1').click(); // or .checked=true; 
-        else if (quality == "mp3best") $('#customRadio2').click();
-        //else if (quality == "mp4best") $('#customRadio3').click();
+        if (quality == "mp3low") {
+            $('#customRadio1').click(); // or .checked=true; 
+        }
+        else if (quality == "mp3best") {
+            $('#customRadio2').click();
+        }
+        // else if (quality == "mp4best") {
+        //     $('#customRadio3').click();
+        // }
     }
 
     $('#customRadio').click(function() {
