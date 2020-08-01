@@ -396,7 +396,7 @@ app.post('/convert', (req, res) => {
                             exportQuality = 'highestaudio';
                             audioBitrate = 320;
                             break;
-                    }
+                    }s
 
                     io.sockets.to(socketId).emit('send notification', statusCodes.info, 'Downloading...');
 
