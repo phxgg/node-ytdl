@@ -411,7 +411,7 @@ app.post('/convert', (req, res) => {
                         let videoText = (isVideo) ? '<br><small class="text-muted">After that, we will convert it to a video!</small>' : null;
 
                         io.sockets.to(socketId).emit('send downloadPercentage',
-                            `Your audio is downloading, do not close this window <i class="far fa-grin-beam"></i><br>Downloaded <b>${(percent * 100).toFixed(2)}%</b>${videoText}`);
+                            `Your audio is downloading, do not close this window <i class="far fa-grin-beam"></i><br>Downloaded <b>${(percent * 100).toFixed(2)}%</b>`);
                     };
 
                     // only for video download
