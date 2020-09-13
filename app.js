@@ -173,7 +173,7 @@ if (config.discord.enableBot)
     //-----------------------------------
     // End Discord Bot   
 }
-s
+
 // CSRF Protection
 const csrfProtection = csrf();
 
