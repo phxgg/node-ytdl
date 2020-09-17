@@ -123,15 +123,17 @@ if (config.discord.enableBot)
                                 .on('end', () => {
                                     voiceChannel.leave();
                                     dispatcher.end();
+                                    console.log(`dispatched ended on event 'end'`);
                                 })
                                 .on('finish', () => {
                                     voiceChannel.leave();
                                     dispatcher.end();
+                                    console.log(`dispatched ended on event 'finish'`);
                                 })
-                                .on('error', error => {
+                                .on('error', (error) => {
                                     voiceChannel.leave();
-                                    console.error(`[dispatcher error]: ${error.message}`);
                                     dispatcher.end();
+                                    console.log(`[dispatcher error]: ${error.message}`);
                                 });
         
                             message.channel.send(`🎶 Start playing: **${song.title}**. Song request by ${message.member.user}`);
