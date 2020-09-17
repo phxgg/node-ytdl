@@ -82,9 +82,11 @@ if (config.discord.enableBot)
 
                 break;
             case 'play':
-                // to use the 'play' command:
+                // the 'play' command seems to work on my local pc with @discordjs/opus AND node-opus. It won't work with opusscript.
+                // @discordjs/opus is the best option to use (node-opus has been deprecated), however heroku won't find an opus engine when using @discordjs/opus.
+                // Instead, it will find an opus engine when using node-opus, but will give a "Error: ffmpeg stream: write EPIPE" error.
+
                 // npm install @discordjs/opus
-                // also uninstall opusscript
 
                 /*message.reply('Under construction.');
                 break;*/
@@ -122,16 +124,14 @@ if (config.discord.enableBot)
                             dispatcher
                                 .on('end', () => {
                                     voiceChannel.leave();
-                                    console.log(`event 'end'`);
                                 })
                                 .on('finish', () => {
                                     voiceChannel.leave();
-                                    console.log(`event 'finish'`);
                                 })
                                 .on('error', (error) => {
                                     voiceChannel.leave();
                                     message.channel.send(`${message.member.user} [dispatcher error]: ${error}`);
-                                    console.log(error);
+                                    console.error(error);
                                 });
         
                             message.channel.send(`🎶 Start playing: **${song.title}**. Song request by ${message.member.user}`);

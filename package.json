@@ -22,7 +22,7 @@
     "express-session": "^1.17.0",
     "ffmpeg": "0.0.4",
     "fluent-ffmpeg": "^2.1.2",
-    "node-opus": "^0.3.3",
+    "@discordjs/opus": "^0.3.2",
     "node-pre-gyp": "^0.15.0",
     "path": "^0.12.7",
     "rate-limiter-flexible": "^2.1.6",
