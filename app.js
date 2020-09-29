@@ -127,17 +127,20 @@ if (config.discord.enableBot)
                             dispatcher
                                 .on('end', () => {
                                     voiceChannel.leave();
+                                    isPlaying = false;
                                 })
                                 .on('finish', () => {
                                     voiceChannel.leave();
+                                    isPlaying = false;
                                 })
                                 .on('error', (error) => {
+                                    isPlaying = false;
                                     voiceChannel.leave();
                                     message.channel.send(`${message.member.user} [dispatcher error]: ${error}`);
                                     console.error(`[discord bot] dispatcher error: ${error}`);
                                 });
         
-                            message.channel.send(`🎶 Start playing: **${song.title}**. Song request by ${message.member.user}`);
+                            message.channel.send(`🎶 Now playing: **${song.title}**. Requested by ${message.member.user}`);
 
                             isPlaying = true;
                         } catch (err) {

@@ -44,13 +44,14 @@ $('#btnConvert').click( function(e) {
             var filename = header.match(/filename="(.+)"/)[1];
 
             // made this using pure javascript cuz idk why it didnt work in jquery lol
-            var btnDownload = document.getElementById('btnDownload');
+
             var wndFile = window.URL || window.webkitURL;
+            var btnDownload = document.getElementById('btnDownload');
             var blobUrl = wndFile.createObjectURL(res);
 
             btnDownload.href = blobUrl;
             btnDownload.download = filename;
-            btnDownload.target = "_blank"; // idk
+            btnDownload.target = "_blank"; // idk, it works
             btnDownload.click();
 
             // we have to revoke the blob url when we no longer need it (when the user has downloaded the file)
