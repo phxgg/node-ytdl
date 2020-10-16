@@ -81,6 +81,7 @@ if (config.discord.enableBot)
                 }*/
 
                 break;
+            
             case 'play':
                 // the 'play' command seems to work on my local pc with @discordjs/opus AND node-opus. It won't work with opusscript.
                 // @discordjs/opus is the best option to use (node-opus has been deprecated), however heroku won't find an opus engine when using @discordjs/opus.
