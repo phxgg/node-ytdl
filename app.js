@@ -18,11 +18,6 @@ const { RateLimiterMemory } = require('rate-limiter-flexible');
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
-// Reading keys from txt files so I can host the project on github without showing sensitive data
-config.discord.token = fs.readFileSync('keys/botToken.txt', 'utf8');
-config.session.sessionKey = fs.readFileSync('keys/sessionKey.txt', 'utf8');
-config.captcha.secretKey = fs.readFileSync('keys/captchaKey.txt', 'utf8');
-
 const app = express();
 const http = require('http').createServer(app);
 const io  = require('socket.io')(http);
