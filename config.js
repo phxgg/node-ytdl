@@ -8,7 +8,7 @@ config.captcha      = {};
 // Discord Settings
 config.discord.enableBot        = false;
 config.discord.prefix           = '++';
-config.discord.token            = 'Njg0NzQ0MDk2OTM3NDEwNjE1.Xl-kEA.kGDDt2XagSXXxsrSCsR_p7WHb4k';
+config.discord.token            = 'YourToken';
 
 // Web Settings
 config.web.site                 = 'https://node-ytdl.herokuapp.com'; // http://localhost:4000

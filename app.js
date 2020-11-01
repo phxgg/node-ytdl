@@ -308,6 +308,7 @@ app.post('/contact', hcaptcha.middleware.validate(config.captcha.secretKey), (re
     res.json({message: 'verified!', hcaptcha: req.hcaptcha});
 });
 
+/*
 app.post('/videoinfo', (req, res) => {
     var url = req.body.url;
     var socketId = (req.body.socketId) ? req.body.socketId : 'undefined';
@@ -341,6 +342,7 @@ app.post('/videoinfo', (req, res) => {
         res.json(data);
     });
 });
+*/
 
 app.post('/convert', (req, res) => {
     var url = req.body.url;
