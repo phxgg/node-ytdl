@@ -1,5 +1,0 @@
-[stop]
-heroku ps:scale web=0 -a node-ytdl
-
-[start]
-heroku ps:scale web=1 -a node-ytdl
