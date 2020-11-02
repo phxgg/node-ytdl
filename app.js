@@ -62,9 +62,6 @@ if (config.discord.enableBot)
                 message.reply(`${config.web.site}/?url=${ytlink}`);
                 break;
 
-
-
-
                 /*message.reply('Converting to MP3, please wait...');
 
                 // other download method goes here???
@@ -364,8 +361,8 @@ app.post('/convert', (req, res) => {
                 io.sockets.to(socketId).emit('send notification', statusCodes.error, info);
                 res.status(204).end();
             } else {
-                let title = info.title.replace('|','').toString('ascii');
-                let videoLength = info.length_seconds;
+                let title = info.videoDetails.title.replace('|','').toString('ascii');
+                let videoLength = info.videoDetails.lengthSeconds;
                 
                 // check whether the video exceeds the maximum length
                 if(videoLength > 600) { // 600 seconds = 10 mins
