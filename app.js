@@ -266,8 +266,6 @@ function getInfo(url, basic, callback) {
                 callback(statusCodes.success, info);
         });
     }
-
-    
 }
 
 //-----------------------------------
@@ -304,42 +302,6 @@ app.post('/contact', hcaptcha.middleware.validate(config.captcha.secretKey), (re
     //return;
     res.json({message: 'verified!', hcaptcha: req.hcaptcha});
 });
-
-/*
-app.post('/videoinfo', (req, res) => {
-    var url = req.body.url;
-    var socketId = (req.body.socketId) ? req.body.socketId : 'undefined';
-
-    //res.setHeader('Content-Type', 'application/json');
-
-    // get basic info
-    getInfo(url, true, function(statusCode, info) {
-        var data = {};
-
-        if (statusCode == statusCodes.error) {
-            data = {
-                statusCode: statusCode,
-                info: info
-            };
-        } else {
-            data = {
-                statusCode: statusCode,
-                info: {
-                    video_id: info.video_id,
-                    title: info.title,
-                    //thumbnail: info.player_response.videoDetails.thumbnail.thumbnails[1], // only works on full info
-                    likes: info.likes,
-                    dislikes: info.dislikes,
-                    views: info.player_response.videoDetails.viewCount,
-                    length: info.length_seconds
-                }
-            }
-        }
-
-        res.json(data);
-    });
-});
-*/
 
 app.post('/convert', (req, res) => {
     var url = req.body.url;
