@@ -241,30 +241,17 @@ function randomStr(length) {
     return result;
 }
 
-function getInfo(url, basic, callback) {
-    if(!url || !ytdl.validateURL(url)) {
-        callback(statusCodes.error, 'Invalid YouTube Link.');
+async function getInfo(url, basic, callback) {
+    if (!url || !ytdl.validateURL(url)) {
+        callback(stautsCodes.error, 'Invalid YouTube Link.')
         return;
     }
 
-    //let videoID = ytdl.getURLVideoID(url);
-
-    if (basic) {
-        ytdl.getBasicInfo(url, (err, info) => {
-//        if (err) throw err;
-            if (err)
-                callback(statusCodes.error, err.message);
-            else        
-                callback(statusCodes.success, info);
-        });
-    } else {
-        ytdl.getInfo(url, (err, info) => {
-//        if (err) throw err;
-            if (err)
-                callback(statusCodes.error, err.message);
-            else        
-                callback(statusCodes.success, info);
-        });
+    try {
+        let info = (basic) ? await ytdl.getBasicInfo(url) : await ytdl.getInfo(url);
+        callback(statusCodes.success, info);
+    } catch (err) {
+        callback(statusCodes.error, err.message);
     }
 }
 
