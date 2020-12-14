@@ -38,10 +38,15 @@ $('#btnConvert').click( function(e) {
             var header = xhr.getResponseHeader('Content-Disposition');
 
             // if header is null, this means that we already got a response message. Otherwise move on to file download
-            if (!header)
+            if (!header || header.indexOf('attachment') == -1)
                 return;
 
-            var filename = header.match(/filename="(.+)"/)[1];
+            var filename = '';
+            var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+            var matches = filenameRegex.exec(header);
+            if (matches != null && matches[1]) { 
+                filename = matches[1].replace(/['"]/g, '');
+            }
 
             // made this using pure javascript cuz idk why it didnt work in jquery lol
 
