@@ -1,5 +1,3 @@
-/* update */
-
 $('#btnConvert').click( function(e) {
     e.preventDefault();
 
