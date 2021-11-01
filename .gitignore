@@ -2,3 +2,4 @@ node_modules/
 documents/
 keys/
 tmp/
+.DS_Store
