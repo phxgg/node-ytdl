@@ -1,66 +1,70 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <!-- Required meta tags -->
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    
-        <!-- Font Awesome Icon -->
-        <link type="text/css" rel="stylesheet" href="/static/font-awesome/css/all.min.css">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        <!-- Custom Styles -->
-        <link type="text/css" rel="stylesheet" href="/static/css/custom.css">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 
-        <!-- hCaptcha -->
-        <!--<script src="https://hcaptcha.com/1/api.js" async defer></script>-->
+  <!-- Font Awesome Icon -->
+  <link type="text/css" rel="stylesheet" href="/static/font-awesome/css/all.min.css">
 
-        <title>YouTube to MP3</title>
-    </head>
-    <body>
+  <!-- Custom Styles -->
+  <link type="text/css" rel="stylesheet" href="/static/css/custom.css">
+
+  <!-- hCaptcha -->
+  <!--<script src="https://hcaptcha.com/1/api.js" async defer></script>-->
+
+  <title>YouTube to MP3</title>
+</head>
+
+<body>
 
 
-        <!-- Notifications Box -->
-        <div aria-live="polite" aria-atomic="true" style="margin: 5px; position: relative; min-height: 200px;">
-            <div style="position: absolute; top: 0; right: 0;" id="notifications-box">
-                <!-- toasts go here -->
-            </div>
-        </div>
+  <!-- Notifications Box -->
+  <div aria-live="polite" aria-atomic="true" style="margin: 5px; position: relative; min-height: 200px;">
+    <div style="position: absolute; top: 0; right: 0;" id="notifications-box">
+      <!-- toasts go here -->
+    </div>
+  </div>
 
-        <!-- div main-container -->
-        <div id="main-container" style="margin: auto; margin-top: -5%; padding: 5px; max-width: 700px;">
+  <!-- div main-container -->
+  <div id="main-container" style="margin: auto; margin-top: -5%; padding: 5px; max-width: 700px;">
 
-            <!-- if javascript is not enabled, show the user a message -->
-            <noscript>
-                <div class="alert alert-danger">
-                    JavaScript is not enabled, and this site heavily depends on it. You should enable JavaScript, otherwise good luck :)
-                </div>
-                <br>
-            </noscript>
+    <!-- if javascript is not enabled, show the user a message -->
+    <noscript>
+      <div class="alert alert-danger">
+        JavaScript is not enabled, and this site heavily depends on it. You should enable JavaScript, otherwise good
+        luck :)
+      </div>
+      <br>
+    </noscript>
 
-            <div class="cookies-info" id="cookies-info" style="display: none;">
-                <h3>We use cookies</h3>
-                <p>
-                    We use cookies to improve your browsing experience. By browsing our website, you consent to our use of cookies.
-                    <hr>
-                    <button class="btn-sm btnOk" id="cookies-ok">OK</button> <button class="btn-sm btnCancel" id="cookies-cancel">Get me out</button>
-                </p>
-            </div>
+    <div class="cookies-info" id="cookies-info" style="display: none;">
+      <h3>We use cookies</h3>
+      <p>
+        We use cookies to improve your browsing experience. By browsing our website, you consent to our use of cookies.
+        <hr>
+        <button class="btn-sm btnOk" id="cookies-ok">OK</button> <button class="btn-sm btnCancel"
+          id="cookies-cancel">Get me out</button>
+      </p>
+    </div>
 
-            <!-- nav bar -->
-            <h1 style="text-align: center;">YouTube to MP3</h1>
-            <hr>
-            <ul class="nav justify-content-center">
-                <li class="nav-item">
-                    <a class="nav-link" href="/">home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/about">about</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/discord">discord</a>
-                </li>
-            </ul>
-            <hr style="width: 10%;">
+    <!-- nav bar -->
+    <h1 style="text-align: center;">YouTube to MP3</h1>
+    <hr>
+    <ul class="nav justify-content-center">
+      <li class="nav-item">
+        <a class="nav-link" href="/">home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/about">about</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/discord">discord</a>
+      </li>
+    </ul>
+    <hr style="width: 10%;">

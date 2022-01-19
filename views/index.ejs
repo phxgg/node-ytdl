@@ -6,16 +6,16 @@
 
 <!-- yt loading -->
 <div id="yt-loading" class="alert alert-info" style="text-align: center; display: none;" role="status">
-    Loading video info...
+  Loading video info...
 </div>
 
 <!-- yt video info -->
 <div class="card border-primary mb-3" id="yt-videoinfo" style="display: none; margin: auto; max-width: 380px; max-height: 235px;">
-    <div class="row no-gutters">
-        <div class="col-md-4" id="yt-embed" style="padding: 5px;">
-            <!-- yt embed code -->
-        </div>
+  <div class="row no-gutters">
+    <div class="col-md-4" id="yt-embed" style="padding: 5px;">
+      <!-- yt embed code -->
     </div>
+  </div>
 </div>
 
 <!-- move on -->
@@ -24,50 +24,50 @@
 <% } %>
 
 <form action="/convert" method="post">
-    <!-- csrf token -->
-    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-    
-    <!-- socket id -->
-    <input type="hidden" name="socketId" value="">
+  <!-- csrf token -->
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  
+  <!-- socket id -->
+  <input type="hidden" name="socketId" value="">
 
-    <!-- form -->
-    <div class="input-group mb-3">
-        <input type="text" name="url" id="url" class="form-control" data-toggle="tooltip" data-placement="top" title="" placeholder="YouTube Link" aria-describedby="btnConvert" value="<%= url %>" required>
-        <div class="input-group-append">
-            <button type="submit" name="convert" id="btnConvert" class="btn btn-outline-success">
-                Convert
-            </button>
-            <!--<input type="submit" name="convert" id="btnConvert" class="btn btn-outline-success" value="Convert">-->
-        </div>
+  <!-- form -->
+  <div class="input-group mb-3">
+    <input type="text" name="url" id="url" class="form-control" data-toggle="tooltip" data-placement="top" title="" placeholder="YouTube Link" aria-describedby="btnConvert" value="<%= url %>" required>
+    <div class="input-group-append">
+      <button type="submit" name="convert" id="btnConvert" class="btn btn-outline-success">
+        Convert
+        </button>
+        <!--<input type="submit" name="convert" id="btnConvert" class="btn btn-outline-success" value="Convert">-->
     </div>
+  </div>
 
-    <small class="text-danger" id="labelInvalidLink" style="display: none;">
-        Invalid YouTube Link.
-    </small>
+  <small class="text-danger" id="labelInvalidLink" style="display: none;">
+    Invalid YouTube Link.
+  </small>
 
-    <h6>quality</h6>
-    
-    <div class="input-group" id="qualityRadio">
-        <div class="custom-control custom-radio custom-control-inline">
-            <input type="radio" class="custom-control-input" id="customRadio" name="quality" value="mp3low" checked>
-            <label class="custom-control-label" for="customRadio" data-toggle="tooltip" data-placement="bottom" title="Lower quality, smaller file.">MP3 regular</label>
-        </div>
-        <div class="custom-control custom-radio custom-control-inline">
-            <input type="radio" class="custom-control-input" id="customRadio2" name="quality" value="mp3best">
-            <label class="custom-control-label" for="customRadio2" data-toggle="tooltip" data-placement="bottom" title="Best possible quality, big file.">MP3 best possible</label>
-        </div>
-        <!--<div class="custom-control custom-radio custom-control-inline">
-            <input type="radio" class="custom-control-input" id="customRadio3" name="quality" value="mp4best">
-            <label class="custom-control-label" for="customRadio3" data-toggle="tooltip" data-placement="bottom" title="Best video quality.">MP4 video <span class="badge badge-warning">BETA</span></span></label>
-        </div>-->
+  <h6>quality</h6>
+  
+  <div class="input-group" id="qualityRadio">
+    <div class="custom-control custom-radio custom-control-inline">
+      <input type="radio" class="custom-control-input" id="customRadio" name="quality" value="mp3low" checked>
+      <label class="custom-control-label" for="customRadio" data-toggle="tooltip" data-placement="bottom" title="Lower quality, smaller file.">MP3 regular</label>
     </div>
-    <br>
+    <div class="custom-control custom-radio custom-control-inline">
+      <input type="radio" class="custom-control-input" id="customRadio2" name="quality" value="mp3best">
+      <label class="custom-control-label" for="customRadio2" data-toggle="tooltip" data-placement="bottom" title="Best possible quality, big file.">MP3 best possible</label>
+    </div>
+    <!--<div class="custom-control custom-radio custom-control-inline">
+      <input type="radio" class="custom-control-input" id="customRadio3" name="quality" value="mp4best">
+      <label class="custom-control-label" for="customRadio3" data-toggle="tooltip" data-placement="bottom" title="Best video quality.">MP4 video <span class="badge badge-warning">BETA</span></span></label>
+    </div>-->
+  </div>
+  <br>
 
-    <!-- hidden download button -->
-    <center><a class="btn btn-outline-success" href="#" id="btnDownload" style="display: none;">Download!</a></center>
+  <!-- hidden download button -->
+  <center><a class="btn btn-outline-success" href="#" id="btnDownload" style="display: none;">Download!</a></center>
 
-    <!-- download percentage -->
-    <div id="dl-percentage" class="alert alert-info blinking" style="display: none; text-align: center;">Your video is converting, do not close this window <i class="far fa-grin-beam"></i></i></div>
+  <!-- download percentage -->
+  <div id="dl-percentage" class="alert alert-info blinking" style="display: none; text-align: center;">Your video is converting, do not close this window <i class="far fa-grin-beam"></i></i></div>
 </form>
 
 <%- include('partials/footer') %>

@@ -3,51 +3,51 @@ var socketId = null;
 
 // grab the socket id globally
 socket.on('connect', () => {
-    socketId = socket.id;
-    console.log(`[socket connected]: ${socketId}`);
+  socketId = socket.id;
+  console.log(`[socket connected]: ${socketId}`);
 
-    // set socket id into form
-    $('input[name="socketId"]').val(socketId);
+  // set socket id into form
+  $('input[name="socketId"]').val(socketId);
 });
 
 // download percentage
 socket.on('send downloadPercentage', (text) => {
-    $('#dl-percentage').html(text);
+  $('#dl-percentage').html(text);
 });
 
 // convert notifications
 socket.on('send notification', (statusCode, message) => {
-    var color = null;
-    var randomId = 'notif_id_' + helper.randomStr(5);
+  var color = null;
+  var randomId = 'notif_id_' + helper.randomStr(5);
 
-    // colors from bootstrap
-    switch(statusCode) {
-        case 'primary':
-            color = '#007aff';
-            break;
-        case 'success':
-            color = '#28a745';
-            break;
-        case 'error':
-            color = '#dc3545';
-            break;
-        case 'info':
-            color = '#17a2b8';
-            break;
-        case 'warning':
-            color = '#ffc107';
-            break;
-    }
+  // colors from bootstrap
+  switch (statusCode) {
+    case 'primary':
+      color = '#007aff';
+      break;
+    case 'success':
+      color = '#28a745';
+      break;
+    case 'error':
+      color = '#dc3545';
+      break;
+    case 'info':
+      color = '#17a2b8';
+      break;
+    case 'warning':
+      color = '#ffc107';
+      break;
+  }
 
-    if(statusCode == 'success' || statusCode == 'error') {
-        $('#btnConvert').html('Convert');
-        $('#btnConvert').removeAttr('disabled');
+  if (statusCode == 'success' || statusCode == 'error') {
+    $('#btnConvert').html('Convert');
+    $('#btnConvert').removeAttr('disabled');
 
-        $('#dl-percentage').html('Your video is converting, do not close this window <i class="far fa-grin-beam"></i>');
-        $('#dl-percentage').hide();
-    }
-    
-    $('#notifications-box').append(`
+    $('#dl-percentage').html('Your video is converting, do not close this window <i class="far fa-grin-beam"></i>');
+    $('#dl-percentage').hide();
+  }
+
+  $('#notifications-box').append(`
         <div class="toast" id="${randomId}" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header">
                 <svg class="bd-placeholder-img rounded mr-2" width="20" height="20" focusable="false" role="img">
@@ -64,11 +64,11 @@ socket.on('send notification', (statusCode, message) => {
             </div>
         </div>
     `);
-    
-    $(`#${randomId}`).toast({ delay: 5000 });
-    $(`#${randomId}`).toast('show');
-    $(`#${randomId}`).on('hidden.bs.toast', () => {
-        $(`#${randomId}`).remove();
-    });
+
+  $(`#${randomId}`).toast({ delay: 5000 });
+  $(`#${randomId}`).toast('show');
+  $(`#${randomId}`).on('hidden.bs.toast', () => {
+    $(`#${randomId}`).remove();
+  });
 
 });
