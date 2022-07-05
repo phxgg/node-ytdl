@@ -386,7 +386,7 @@ app.post('/convert', (req, res) => {
 
           // set headers
           res.setHeader('Content-Type', contentType);
-          res.setHeader('Content-Disposition', contentDisposition(title + extension));
+          res.setHeader('Content-Disposition', contentDisposition(title + extension, { fallback: false }));
 
           if (isVideo) {
             // make video download

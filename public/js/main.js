@@ -1,3 +1,19 @@
+// Save file function
+var saveData = (function () {
+  var a = document.createElement('a');
+  document.body.appendChild(a);
+  a.style = 'display: none';
+  return function (data, fileName) {
+      var blob = new Blob([data], {type: 'octet/stream'}),
+          url = window.URL.createObjectURL(blob);
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      window.URL.revokeObjectURL(url);
+  };
+}());
+
+// Convert button
 $('#btnConvert').click(function (e) {
   e.preventDefault();
 
@@ -42,22 +58,27 @@ $('#btnConvert').click(function (e) {
         return;
 
       var filename = '';
-      var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+      // var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+      var filenameRegex = /filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/;
       var matches = filenameRegex.exec(header);
       if (matches != null && matches[1]) {
-        filename = matches[1].replace(/['"]/g, '');
+        filename = matches[1].replace(/[\/|\\:*?"<>]/g, ''); // .replace(/['"]/g, '')
       }
+
+      filename = decodeURIComponent(filename);
 
       // made this using pure javascript cuz idk why it didnt work in jquery lol
 
-      var wndFile = window.URL || window.webkitURL;
-      var btnDownload = document.getElementById('btnDownload');
-      var blobUrl = wndFile.createObjectURL(res);
+      // var wndFile = window.URL || window.webkitURL;
+      // var btnDownload = document.getElementById('btnDownload');
+      // var blobUrl = wndFile.createObjectURL(res);
 
-      btnDownload.href = blobUrl;
-      btnDownload.download = filename;
-      btnDownload.target = "_blank"; // idk, it works
-      btnDownload.click();
+      // btnDownload.href = blobUrl;
+      // btnDownload.download = filename;
+      // btnDownload.target = '_blank'; // idk, it works
+      // btnDownload.click();
+
+      saveData(res, filename);
 
       // we have to revoke the blob url when we no longer need it (when the user has downloaded the file)
       // find a way to know when the file has been downloaded
