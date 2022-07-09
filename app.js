@@ -1,5 +1,4 @@
 const config                = require('./config')
-const Discord               = require('discord.js');
 const express               = require('express');
 const ytdl                  = require('ytdl-core');
 const path                  = require('path');
@@ -21,166 +20,6 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
-
-/*
-********************************
-** Discord Bot code goes here **
-********************************
-*/
-
-if (config.discord.enableBot) {
-  // Discord Bot
-  //-----------------------------------
-
-  const discord = new Discord.Client();
-
-  discord.on('ready', () => {
-    console.log(`discord.js client ready. Logged in as: ${discord.user.tag}`);
-  });
-
-  let dispatcher = null;
-  let isPlaying = false;
-
-  discord.on('message', async message => {
-    if (!message.content.startsWith(config.discord.prefix) || message.author.bot) return;
-
-    const args = message.content.slice(config.discord.prefix.length).split(' ');
-    const command = args.shift().toLowerCase();
-
-    // get youtube link from arguments
-    let ytlink = args[0];
-
-    switch (command) {
-      case 'download':
-        if (!ytdl.validateURL(ytlink))
-          return message.reply('This is not a YouTube link.');
-
-
-        // 
-        message.reply(`${config.web.site}/?url=${ytlink}`);
-        break;
-
-        /*message.reply('Converting to MP3, please wait...');
-
-        // other download method goes here???
-
-        try {
-            let streamFile = `${config.web.site}/generate?url=${ytlink}&secretKey=${config.secret.generateKey}`;
-            let title = 'track.mp3';
-
-            const attachment = new Discord.MessageAttachment(streamFile, title);
-            await message.reply('Here is your track!', attachment);
-        } catch (err) {
-            console.error(`[discord bot] download(): Something went wrong: ${err}`);
-            message.reply(`There was an error. The file may be too big, so you might want to use the web version here: ${config.web.site}.\nERROR: ${err}`);
-        }*/
-
-        break;
-
-      case 'play':
-        // the 'play' command seems to work on my local pc with @discordjs/opus AND node-opus. It won't work with opusscript.
-        // @discordjs/opus is the best option to use (node-opus has been deprecated), however heroku won't find an opus engine when using @discordjs/opus.
-        // Instead, it will find an opus engine when using node-opus, BUT it will give a "Error: ffmpeg stream: write EPIPE" error.
-        // The best thing to do right now, is find a way to make it work using @discordjs/opus
-
-        // Also, I installed node-pre-gyp and put it FIRST in the package.json dependencies because heroku won't install @discordjs/opus without it.
-
-        // npm install @discordjs/opus
-
-        /*message.reply('Under construction.');
-        break;*/
-
-        // Voice only works in guilds, if the message does not come from a guild,
-        // we ignore it
-        if (!message.guild) return;
-
-        // validate youtube link
-        if (!ytdl.validateURL(ytlink))
-          return message.reply('This is not a YouTube link.');
-
-        if (isPlaying)
-          return message.reply('Already playing a song! Use ++stop to stop playing.');
-
-        const voiceChannel = message.member.voice.channel;
-        if (!voiceChannel) {
-          return message.reply('Please be in a voice channel first!');
-        }
-
-        const songInfo = await ytdl.getInfo(ytlink.replace(/<(.+)>/g, '$1'));
-
-        const song = {
-          title: songInfo.title,
-          url: songInfo.url
-        }
-
-        try {
-          await voiceChannel.join()
-            .then(connection => {
-              try {
-                const stream = ytdl(ytlink, { filter: 'audioonly' });
-                dispatcher = connection.play(stream);
-
-                dispatcher
-                  .on('end', () => {
-                    voiceChannel.leave();
-                    isPlaying = false;
-                  })
-                  .on('finish', () => {
-                    voiceChannel.leave();
-                    isPlaying = false;
-                  })
-                  .on('error', (error) => {
-                    isPlaying = false;
-                    voiceChannel.leave();
-                    message.channel.send(`${message.member.user} [dispatcher error]: ${error}`);
-                    console.error(`[discord bot] dispatcher error: ${error}`);
-                  });
-
-                message.channel.send(`🎶 Now playing: **${song.title}**. Requested by ${message.member.user}`);
-
-                isPlaying = true;
-              } catch (err) {
-                isPlaying = false;
-                console.error(`[discord bot] play(): Something went wrong: ${err}`);
-                voiceChannel.leave();
-                return message.reply(`Something went wrong: ${err}`);
-              }
-            });
-        } catch (err) {
-          isPlaying = false;
-          console.error(`[discord bot] play(): I could not join the voice channel: ${err}`);
-          voiceChannel.leave();
-          return message.reply(`I could not join the voice channel: ${err}`);
-        }
-
-        break;
-      case 'stop':
-        if (!isPlaying)
-          return;
-
-        try {
-          const voiceChannel = message.member.voice.channel;
-          if (!voiceChannel)
-            return;
-
-          dispatcher.end();
-          isPlaying = false;
-        } catch (err) {
-          isPlaying = false;
-          console.error(`[discord bot] stop(): Something went wrong: ${err}`);
-        }
-        break;
-      case 'help':
-        message.reply(`Check out: ${config.web.site}/discord for the bot's commands.`);
-        break;
-    }
-  });
-
-  discord.login(config.discord.token);
-
-  //-----------------------------------
-  // End Discord Bot   
-}
 
 // CSRF Protection
 const csrfProtection = csrf();
@@ -237,6 +76,10 @@ function randomStr(length) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
+}
+
+function convertToValidFilename(str) {
+  return (str.replace(/[\/|\\:*?"<>]/g, ' '));
 }
 
 async function getInfo(url, basic, callback) {
@@ -308,7 +151,7 @@ app.post('/convert', (req, res) => {
         io.sockets.to(socketId).emit('send notification', statusCodes.error, info);
         res.status(204).end();
       } else {
-        let title = info.videoDetails.title.replace('|', '').toString('ascii');
+        let title = convertToValidFilename(info.videoDetails.title) // .replace('|', '').toString('ascii');
         let videoLength = info.videoDetails.lengthSeconds;
 
         // check whether the video exceeds the maximum length
