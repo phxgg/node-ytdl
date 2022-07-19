@@ -155,8 +155,8 @@ app.post('/convert', (req, res) => {
         let videoLength = info.videoDetails.lengthSeconds;
 
         // check whether the video exceeds the maximum length
-        if (videoLength > 600) { // 600 seconds = 10 mins
-          io.sockets.to(socketId).emit('send notification', statusCodes.error, 'Max video length is 10 minutes.');
+        if (videoLength > 1800) { // 600 seconds = 10 mins
+          io.sockets.to(socketId).emit('send notification', statusCodes.error, 'Max video length is 30 minutes.');
           res.status(204).end();
         } else {
           // check if video or audio
