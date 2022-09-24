@@ -225,7 +225,7 @@ app.post('/convert', (req, res) => {
               `Converting... Do not close this window <i class="far fa-grin-beam"></i><br>Downloaded <b>${(percent * 100).toFixed(2)}%</b> (${(downloaded / 1024 / 1024).toFixed(2)}MB of ${(total / 1024 / 1024).toFixed(2)}MB)`);
           };
 
-          console.log(`[socket: ${socketId}]: STARTED DOWNLOAD`);
+          // log(`[socket: ${socketId}]: STARTED DOWNLOAD`);
 
           // set headers
           res.setHeader('Content-Type', contentType);
@@ -247,11 +247,11 @@ app.post('/convert', (req, res) => {
               .audioBitrate(audioBitrate)
               .on('error', (err, stdout, stderr) => {
                 io.sockets.to(socketId).emit('send notification', statusCodes.error, `[audio] ffmpeg conversion stream closed: ${err.message}`);
-                log(`[socket: ${socketId}] AUDIO: user stopped conversion`);
+                // log(`[socket: ${socketId}] AUDIO: user stopped conversion`);
                 stream.destroy(); // stop ytdl from keeping on downloading
               })
               .on('end', () => {
-                log(`[socket: ${socketId}] AUDIO: DOWNLOAD FINISHED!`);
+                // log(`[socket: ${socketId}] AUDIO: DOWNLOAD FINISHED!`);
                 io.sockets.to(socketId).emit('send notification', statusCodes.success, 'Successfully downloaded!');
               })
               .pipe(res, { end: true });
