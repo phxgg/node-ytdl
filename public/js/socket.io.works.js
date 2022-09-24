@@ -1,22 +1,7 @@
 var socket = io();
 var socketId = null;
 
-// grab the socket id globally
-socket.on('connect', () => {
-  socketId = socket.id;
-  console.log(`[socket connected]: ${socketId}`);
-
-  // set socket id into form
-  $('input[name="socketId"]').val(socketId);
-});
-
-// download percentage
-socket.on('send downloadPercentage', (text) => {
-  $('#dl-percentage').html(text);
-});
-
-// convert notifications
-socket.on('send notification', (statusCode, message) => {
+const sendNotification = (statusCode, message) => {
   var color = null;
   var randomId = 'notif_id_' + helper.randomStr(5);
 
@@ -70,5 +55,23 @@ socket.on('send notification', (statusCode, message) => {
   $(`#${randomId}`).on('hidden.bs.toast', () => {
     $(`#${randomId}`).remove();
   });
+}
 
+// grab the socket id globally
+socket.on('connect', () => {
+  socketId = socket.id;
+  console.log(`[socket connected]: ${socketId}`);
+
+  // set socket id into form
+  $('input[name="socketId"]').val(socketId);
+});
+
+// download percentage
+socket.on('send downloadPercentage', (text) => {
+  $('#dl-percentage').html(text);
+});
+
+// convert notifications
+socket.on('send notification', (statusCode, message) => {
+  sendNotification(statusCode, message);
 });
