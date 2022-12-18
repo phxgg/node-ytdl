@@ -12,7 +12,7 @@ const ffmpegPath            = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg                = require('fluent-ffmpeg');
 const fs                    = require('fs');
 const readline              = require('readline');
-const hcaptcha              = require('express-hcaptcha');
+// const hcaptcha              = require('express-hcaptcha');
 const { RateLimiterMemory } = require('rate-limiter-flexible');
 
 ffmpeg.setFfmpegPath(ffmpegPath);
@@ -125,10 +125,15 @@ app.get('/generate', (req, res) => {
   return;
 });
 
-app.post('/contact', hcaptcha.middleware.validate(config.captcha.secretKey), (req, res) => {
-  //res.status(200).send('wat');
-  //return;
-  res.json({ message: 'verified!', hcaptcha: req.hcaptcha });
+// app.post('/contact', hcaptcha.middleware.validate(config.captcha.secretKey), (req, res) => {
+//   //res.status(200).send('wat');
+//   //return;
+//   res.json({ message: 'verified!', hcaptcha: req.hcaptcha });
+// });
+
+app.post('/contact', (req, res) => {
+  res.status(200).send('wat');
+  return;
 });
 
 app.post('/convert', (req, res) => {
